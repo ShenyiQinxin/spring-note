@@ -22,14 +22,13 @@
 - hides JPA/Hibernate/JDBC
 - RuntimeException
 - DataAccessException
-```mermaid
-graph TD
+
 B[DataAccessException] --> A[RuntimeException]
 C[DataAccessResource FailureException] --> B
 D[DataIntegrity ViolationException] --> B
 E[CleanupFailure DataAccessException] --> B
 F[OptimisticLocking FailureException] --> B
-```
+
 ## Using Test Databases
 - Embedded Database Builder i.e. HSQL/H2/Derby
 ```Java
