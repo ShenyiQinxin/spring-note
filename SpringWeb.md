@@ -261,7 +261,7 @@ return “rewardView”; }
 @Configuration
 @ComponentScan("accounts.web") public class MvcConfig() {
 ```
->Implement the Views
+>**Implement the Views**
 ```html
 <html>  
 <head>
