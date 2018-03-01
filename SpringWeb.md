@@ -6,8 +6,17 @@
  **application layer (Spring)**
  ]*Java EE servlet container*
  }*JVM*
+ 
+
+
+----------
+
+
 ![web application architecture](https://user-images.githubusercontent.com/32177380/36849383-eea4fac0-1d31-11e8-9f96-9ef2be9e2214.png)
+>
 ![servlet container after starting up](https://user-images.githubusercontent.com/32177380/36849592-7093cf48-1d32-11e8-8873-d814d87d9b28.png)
+>
+![servlet and config](https://user-images.githubusercontent.com/32177380/36850097-cf73f884-1d33-11e8-9ff6-a12501816dbf.png)
 ## Spring Web Application Context
 > ApplicationContext initialization
 > servlet
@@ -143,5 +152,158 @@ return new String[]{"/rewardsadmin/*"};
 |AbstractAnnotationConfigDispatcherServletInitializer| dispatcherServlet & root config and mapping|
 > beans defined in web context have access to  beans defined in RootApplicationContext
 #### Controllers
+- controller impl
+```java
+@Controller
+
+public class AccountController {
+
+@RequestMapping("/listAccounts")
+
+public String list(Model model) {...} }
+```
+- Controller Method Parameters
+	- HttpServletRequest 
+	- HttpSession
+	- Principal
+	- Model
+```java
+//1
+Model model
+
+//2 @RequestMapping("/showAccounts")
+//http://localhost:8080/mvc-1/rewardsadmin/showAccount.htm?entityId=123
+@RequestParam("entityId") long id
+
+//3 @RequestMapping("/listAccounts/{accountId}")
+@PathVariable("accountId") long id
+
+//4
+HttpServletRequest request
+
+//5
+@RequestHeader(“user-agent”) String agent
+
+//6
+Principal user
+
+//7
+HttpSession session
+```
 #### Views
+- **Controllers** return a logic view name by a **String**
+- DispatcherServlet delegates to **ViewResolvers** that select View based on **view name**
+
+#### View Resolvers
+- define a ViewResolver bean in DispatcherServlet using InternalResourceViewResolver and setPrefix, setSuffix
+- by default, JSP: /WEB-INF/reward/list.jsp would be the view of name "list"
+
+![view resolver define](https://user-images.githubusercontent.com/32177380/36853241-f110c820-1d3b-11e8-93b2-8c33cafd0156.png)
+
+## Developing a Spring MVC application
+Steps:
+1.  Deploy a DispatcherServlet (one-time only)
+2.  Implement a Controller
+3. Register the Controller with the DispatcherServlet
+4.  Implement the Views
+5.  Register a ViewResolver (one-time only & optional)
+6. Deploy and Test
+repeat steps 2-6 to develop new functionality
+>
+>**Deploy a DispatcherServlet**
+>initialize the DispatcherServlet 
+```java
+class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer{
+getRootConfigClasses();//services, repositories
+getServletConfigClasses();//Spring MVC configs
+getServletMappings();
+...
+}
+```
+>**initial Spring MVC config**
+>DisatcherServlet 
+```java
+@Configuration  
+public class MvcConfig {
+	// No beans required for basic Spring MVC usage.
+	// Spring MVC defines several beans automatically
+	//could override ViewResolvers
+}
+```
+>**Implement a Controller**
+```java
+@Controller
+
+public class RewardController {  
+private RewardLookupService lookupService;
+
+@Autowired
+
+public RewardController(RewardLookupService svc) { this.lookupService = svc;
+
+}
+
+@RequestMapping("/reward/show")  
+public String show(@RequestParam("id") long id,
+
+Model model) {  
+Reward reward = lookupService.lookupReward(id);
+
+model.addAttribute(“reward”, reward);
+
+return “rewardView”; }
+
+}
+```
+>**Register the Controller with the DispatcherServlet**
+>by **ComponentScan** in this case
+```java
+@Configuration
+@ComponentScan("accounts.web") public class MvcConfig() {
+```
+>Implement the Views
+```html
+<html>  
+<head>
+	<title>Your Reward</title>
+</head> 
+<body>
+Amount=${reward.amount} <br/> Date=${reward.date} <br/>  
+Account Number=${reward.account} <br/> Merchant Number=${reward.merchant}
+</body> 
+</html>
+```
+>- *reward* is the model name,
+>- /WEB-INF/views/*rewardView*.jsp
+>- no references to Spring object / tags required in JSP
+>
+>**Register ViewResolver**
+```java
+@Configuration 
+@ComponentScan("accounts.web") 
+public class MvcConfig {
+
+	@Bean
+	public ViewResolver simpleViewResolver() { 
+	InternalResourceViewResolver vr = 
+	new InternalResourceViewResolver(); 
+	vr.setPrefix ( "/WEB-INF/views/" ); 
+	vr.setSuffix ( ".jsp" );  
+
+	return vr;
+
+}
+```
+>i.e. Controller returns *rewardList*
+> ViewResolver converts to */WEB-INF/views/rewardList.jsp*
+>
+>**Deploy and Test**
+
+    http://localhost:8080/rewardsadmin/reward/show?id=1
+    Your Reward
+    
+    Amount = $100.00  
+    Date = 2006/12/29  
+    Account Number = 123456789 Merchant Number = 1234567890
+
 
