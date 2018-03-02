@@ -231,8 +231,155 @@ public void deleteItem(@PathVariable("orderId") long orderId,
 
 }
 ```
+
 ## RESTful Clients with the RestTemplate
 >Provides access to RESTful services
+>
 ![enter image description here](https://user-images.githubusercontent.com/32177380/36919242-a82cde24-1e2a-11e8-895d-a94b96704cf6.png)
+### RestTemplate
+>Setups default HttpMessageConverters internally
 ```java
+RestTemplate template = new RestTemplate();
+String uri = "http://example.com/store/orders/{id}/items";
+
+// GET all order items for an existing order with ID 1: 
+OrderItem[] items =  
+template.getForObject(uri, OrderItem[].class, "1");
+
+// POST to create a new item 
+OrderItem item = // create item object 
+URI itemLocation = template.postForLocation(uri, item, "1"); 
+
+// PUT to update the item 
+item.setAmount(2);
+template.put(itemLocation, item); 
+
+// DELETE to remove that item again 
+template.delete(itemLocation);
 ```
+
+### Summary
+-   REST is an architectural style that can be applied to HTTP-based applications
+    
+    – Useful for supporting diverse clients and building highly scalable systems
+    
+-   Spring-MVC adds REST support using a familiar programming model (but without Views)
+    
+    – @ResponseStatus, @RequestBody, @ResponseBody  
+    – HttpEntity, ResponseEntity, UriComponentsBuilder – HTTP Message Converters
+    
+-   Clients use RestTemplate to access RESTful servers
+
+## More on Spring REST
+### @ResponseStatus & Exceptions
+>annotate Exception class with `@ResponseStatus`
+```java
+@ResponseStatus(HttpStatus.NOT_FOUND) // 404  
+public class OrderNotFoundException extends RuntimeException {
+
+... }
+```
+>`@ExceptionHandler` is used on non-Exception class
+```java
+@ResponseStatus(HttpStatus.CONFLICT) // 409 
+@ExceptionHandler({DataIntegrityViolationException.class}) 
+public void conflict() {
+
+// could add the exception, response, etc. as method params
+
+}
+```
+### Mixing Views
+>-   How to distinguish between representations?
+>use **produces** and **consumes** attributes to distinguish between *a RESTful POST* from a *HTML form submission*
+```java
+@GetMapping(value="/orders/{id}", produces = {"application/json"}) 
+@PostMapping(value="/orders/{id}", consumes = {"application/json"})
+```
+>Need two methods on controller for same URL – One uses a converter, the other a View?
+>- Mark RESTful method with produces
+>- To avoid returning XML to normal browser request – Call RESTful method from View method
+>- Implement all data-access logic once in RESTful method
+```java
+//RESTful method
+@GetMapping(path="/orders/{id}",  
+produces = {"application/json","application/xml"})
+
+@ResponseStatus(HttpStatus.OK) // 200  
+public @ResponseBody Order getOrder(@PathVariable("id") long id) {
+
+ // Access data here ... 
+
+ return orderService.findOrderById(id);
+} 
+//view method calls RESTful method
+@GetMapping(path="/orders/{id}") public String getOrder(Model model, @PathVariable("id") long id) { 
+
+}
+
+// Invoke RESTful method, use result to populate model 
+
+model.addAttribute(getOrder(id));  
+return "orderDetails"; // View name
+```
+### HttpMethodFilter
+>-   HTML forms do not support PUT or DELETE
+>-   use a POST  
+    – Put PUT or DELETE in a hidden form field
+    
+>-   Deploy a special filter to intercept the message – Restores the HTTP method you wanted to send – Appear to Spring MVC as a PUT or a DELETE
+
+### HATEOAS
+>Spring HATEOAS provides an API for generating these links in MVC Controller responses
+```xml
+<account>
+   <account-number>12345</account-number>
+   <balance currency="usd">100.00</balance>
+   <link rel="self" href="/account/12345" />
+   <link rel="deposit" href="/account/12345/deposits" />
+   <link rel="withdraw" href="/account/12345/withdrawls" />
+   <link rel="transfer" href="/account/12345/transfers" />
+   <link rel="close" href="/account/12345/close" /> 
+</account>
+//the links change as state change
+<account>
+   <account-number>12345</account-number>
+   <balance currency="usd">-25.00</balance>
+   <link rel="self" href="/account/12345" />
+   <link rel="deposit" href="/account/12345/deposits" /> 
+
+</account>
+```
+#### Managing Links
+>Holds an href and a rel (relationship)
+>Self implies the current resource
+>Link builder derives URL from Controller mappings
+```java
+// A link can be built with a relationship name  
+// Use withSelfRel() for a self link  
+Link link = ControllerLinkBuilder.linkTo(AccountController.class).slash(accountId).slash("transfer")).withRel("transfer"); 
+
+link.getRel(); // => transfer 
+link.getHref(); // => http://.../account/12345/transfer
+```
+#### Converting to a Resource
+> Wrap return value of REST method in Resource  
+– Converted by @ResponseBody to XML/JSON with links
+
+>Only HAL supported currently
+> Hypertext Application Language (HAL)
+```java
+@Controller @EnableHypermediaSupport(type=HypermediaType.HAL) public class OrderController {
+
+@GetMapping(value="/orders/{id}") public @ResponseBody Resource<Order>
+
+ getOrder(@PathVariable("id") long id) {
+      Links\[\] = ...; // Some links (see previous slide) 
+
+return new Resource<Order> (orderService.findOrderById(id), links);
+
+} }
+```
+#### Spring HATEOAS
+-   For generating links in RESTful responses
+-   Supports ATOM (newsfeed XML) and HAL (Hypertext Application Language) link
