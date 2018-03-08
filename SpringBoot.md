@@ -1,42 +1,42 @@
 # Spring Boot
-> An opinionated runtime for Spring projects
-> - setup is based on the classpath contents
-> i.e. JPA EntityManagerFactory is setuped when the implementation is in the classpath. Spring MVC is setup when it is in the classpath.
+> An **opinionated** runtime for Spring projects
+> - setup is based on the **classpath** contents
+> i.e. JPA EntityManagerFactory is setuped when the implementation is in the classpath. Spring MVC is setuped when it is in the classpath.
 > - setup can be overriden, but not needed mostly
 > 
 > Handles low-level predictable setup
 > Support different Spring project types i.e. Web, Batch,  etc.
 
 ## HelloWorld Example
-- pom.xml -- setup Spring boot dependencies
-	- in parent pom : `spring-boot-starter-parent` & version i.e. `1.3.0.RELEASE`
-	- starter POMs the recommended dependencies : 
+- **pom.xml** -- setup Spring boot dependencies
+	- in **parent POM** : `spring-boot-starter-parent` & version i.e. `1.3.0.RELEASE`
+	- **starter POMs** the recommended dependencies : 
+	`spring-boot-starter-<module>`
 	```
 	spring-boot-starter-web
 	```
-	- plugin: 
+	- **plugin**: 
 	`spring-boot-maven-plugin`
-- HelloController classes --Spring MVC controller
-- application.properties 
+- **business modules**: HelloController classes --Spring MVC **controller**
+- **application.properties** 
 	- configure an InternalResourceViewResolver
 	 i.e. `spring.mvc.view.prefix=/WEB-INF/views
      spring.mvc.view.suffix=.jsp`
-- hello.jsp --View 
-- Application class -- Application launcher
+- hello.jsp --**View** 
+- Application class -- **Application** launcher
 ```java
-@SpringBootApplication
-
+**@SpringBootApplication**
 public class Application {
-
-public static void main(String[] args) { SpringApplication.run(Application.class, args);
+public static void main(String[] args) { 
+SpringApplication.run(Application.class, args);
 
 }
 ```
 - execution
 ```java
-mvn package
-helloApp-0.0.1-snapshot.jar//with Tomcat inside
-java -jar helloApp-0.0.1-snapshot.jar
+mvn package //generates an archive file
+helloApp-0.0.1-snapshot.jar//generated file with Tomcat inside
+java -jar helloApp-0.0.1-snapshot.jar//runs app using command line
 ```
 ## Explain dependency , configuration and packaging
 ### starter POMs
@@ -51,11 +51,11 @@ java -jar helloApp-0.0.1-snapshot.jar
 ### auto configuration
 ```java
 //@Configuration
-//@ComponentScan scan current package and its subpackages
+//@ComponentScan //- scan current package and its subpackages
 //@EnableAutoConfiguration
 @SpringBootApplication
 public class MyAppConfig {  
-public static void main(String\[\] args) {
+public static void main(String[] args) {
 
 	SpringApplication.run(MyAppConfig.class, args); 
 }
@@ -71,7 +71,7 @@ public static void main(String\[\] args) {
 
 ### packaging
 - Spring Boot creates a single archive JAR/WAR
-- `java -jar my-app.jar`
+- run the jar file: `java -jar my-app.jar`
 - maven plugin for packaging
 `spring-boot-maven-plugin`
 - `.jar.original` contains only your source code
@@ -79,7 +79,7 @@ public static void main(String\[\] args) {
 (with web starter dependency, Tomcat included), so it is executable
 
 ## Web application with Spring Boot
-### embedded Tomcat and Jetty support
+### default is embedded Tomcat & includes Jetty support
 ```xml
 <dependency>
   <groupId>org.springframework.boot</groupId>
@@ -101,18 +101,18 @@ public static void main(String\[\] args) {
 
 </dependency>
 ```
-### Spring Boot app inside a Servlet container
+### explicitly run Spring Boot app inside a Servlet container
 -  Change artifact type to WAR (instead of JAR) 
-- ExtendSpringBootServletInitializer 
+- extends SpringBootServletInitializer 
 ```java 
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer{
-protected SpringApplicationBuilder configure( SpringApplicationBuilder application) {
+protected SpringApplicationBuilder configure( SpringApplicationBuilder application){
+	return application.sources(Application.class); 
+}
 
-return application.sources(Application.class); }
-
-public static void main(String[] args) { SpringApplication.run(Application.class, args);
-
+public static void main(String[] args) { 
+	SpringApplication.run(Application.class, args);
 }
 
 }
@@ -124,7 +124,7 @@ public static void main(String[] args) { SpringApplication.run(Application.class
 - .war is a hybrid WAR file, additionally containing the embedded Tomcat
 - 
 ## Other features of Spring Boot
-- application.properties is easy to be consumed via PropertySource, Environment and @Value
+- **application.properties** is easy to be consumed via **PropertySource, Environment and @Value**
 - configure DataSource bean with `spring-boot-starter-jdbc/jpa`
 > Spring Boot creates the DataSource according to the properties set even the connection pool if the jar is in classpath
 ```properties
@@ -152,19 +152,19 @@ database:
 
 ## How AutoConfiguration works
 -   Extensive use of pre-written @Configuration classes 
--   Conditional on
-	- The contents of the classpath 
-	-  Properties you have set  
-    - Beans already defined
+-   **@Conditional** on
+	- The contents of the **classpath** 
+	-  **Properties** you have set  
+    - **Beans** already defined
 i.e. `@Profile` is a special case of `@Conditional`
 
 ### @Conditional annotations
+>-   Only create if other beans exist (or don't exist)
 ```java
 @Bean  
 @ConditionalOnBean(name={"dataSource"})  
 public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-
-return new JdbcTemplate(dataSource); 
+	return new JdbcTemplate(dataSource); 
 }
 @ConditionalOnBean(type={DataSource.class})
 @ConditionalOnClass
@@ -179,7 +179,7 @@ return new JdbcTemplate(dataSource);
 >See `spring-boot-autoconfigure` JAR file
 
 ### How to customize Spring Boot
-- Set some of Spring Boot's properties  
+- 1. Set some of Spring Boot's **properties**  
 	-	`application.properties` in working directory/classpath/their sub-directory `/config or config package`
 	-	create a `PropertySource`
 >override DataSource Configuration
@@ -207,17 +207,17 @@ server.session-timeout=1800
 server.context-path=/rewards
 server.servlet-path=/admin
 ```
-- Define certain beans yourself so Spring Boot won't 
+- 2. Define certain **beans** yourself so Spring Boot won't 
 	- beans you declare explicitly disable any auto- created ones.
 	i.e. Your `DataSource` stops Spring Boot creating a default `DataSource`, bean type matters.
--  Explicitly disable some auto-configuration  
+-  3. Explicitly disable some auto-configuration  
 ```java
-@EnableAutoConfiguration(exclude=DataSourceAutoConfiguration.class) 
+@EnableAutoConfiguration(**exclude**=DataSourceAutoConfiguration.class) 
 public class ApplicationConfiguration {
 
 ... }
 ```
-- Changing dependencies
+- 4. Changing **dependencies**
 >to change dependencies version , set the appropriate Maven property in your pom.xml
 ```xml
 <properties>
@@ -242,17 +242,20 @@ public static void main(String[] args) {
 ```java
 @Configuration
 class AppConfig {
-	@Value("${java.home}") String javaInstallDir;  
+@Value("${java.home}") String javaInstallDir;  
 ...
 
 }
 ```
-- the usage of @ConfigurationProperties & @EnableConfigurationProperties
+- the usage of **@ConfigurationProperties & @EnableConfigurationProperties**
 ```java
 @Configuration
 public class RewardsClientConfiguration {
 
-@Value("${rewards.client.host}") String host; @Value("${rewards.client.port}") int port; @Value("${rewards.client.logdir}") String logdir; @Value("${rewards.client.timeout}") int timeout;
+@Value("${rewards.client.host}") String host; 
+@Value("${rewards.client.port}") int port; 
+@Value("${rewards.client.logdir}") String logdir; 
+@Value("${rewards.client.timeout}") int timeout;
 
 ... }
 
@@ -268,7 +271,8 @@ public class ConnectionSettings {
 }
 //2nd @EnableConfigurationProperties
 @Configuration
-@EnableConfigurationProperties(ConnectionSettings.class) public class RewardsClientConfiguration {
+@EnableConfigurationProperties(ConnectionSettings.class) 
+public class RewardsClientConfiguration {
 
 // Spring initialized this automatically
 @Autowired ConnectionSettings connectionSettings;
@@ -338,16 +342,14 @@ database:
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(class=TransferApplication.class) 
-public  final class  TransferServiceTests  {
+public final class TransferServiceTests  {
 
 @Autowired  
-private  TransferService  transferService;
+private TransferService transferService;
 
 @Test  
 public  void  successfulTransfer()  {
-
-TransferConfirmation  conf  =  transferService.  transfer(...);
-
+TransferConfirmation  conf=transferService.transfer(...);
 ... }
 
 }
@@ -355,8 +357,8 @@ TransferConfirmation  conf  =  transferService.  transfer(...);
 //the same configuration class that the application would use, but for testing purpose
 @SpringBootApplication  
 public  class  TransferApplication  {
-
-public  static  void  main(String[]  args)  { SpringApplication.run(TransferApplication.class,  args);
+	public  static  void  main(String[]  args)  { 									
+	   SpringApplication.run(TransferApplication.class,  args);
 
 } }
 ```
@@ -367,11 +369,11 @@ public  static  void  main(String[]  args)  { SpringApplication.run(TransferAppl
 public  final  class  TransferServiceTests  {
 ...}
 ```
-- `@WebAppConfiguration` Creates a WebApplicationContext  
- Can test code that uses web features
-
-	-	ServletContext, Session and Request bean scopes
-	-	 Configures the location of resources
-	-	Defaults to `src/main/webapp  `
-	-	Override using annotation's value attribute
-	-	For classpath resources use `classpath:prefix`
+`@WebAppConfiguration` :
+- Creates a **WebApplicationContext**  
+ - Can test code that uses web features
+	-	**ServletContext**, **Session and Request bean scopes**
+-	 Configures the **location of resources**
+		-	**Defaults** to `src/main/webapp  `
+			-	Override using annotation's *value* attribute
+		-	For **classpath** resources use `classpath:prefix`
