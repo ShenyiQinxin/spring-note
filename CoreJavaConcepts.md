@@ -277,9 +277,17 @@ NavigableSet<K> descendingKeySet(); }
 	- **synchronized** methods/blocks
 	- where **one thread** can be executing at a point of time
 - Concurrent 
-	-  copy on write
-	- compare and swap
-	- locks
+	-  **copy on write** (**array** read >>write)
+	`CopyOnWriteArrayList & CopyOnWriteArraySet`
+		- any **modification** of the collection _creates a new array_
+		- **read** is not synchronized 
+		- only **write** is synchronized
+	- **compare and swap**
+	`ConcurrentLinkedQueue`
+		- before modification , the value of a variable is **cached**
+		- after modification and the **value is changed** by a thread, then repeforms **operation** and the value is updated.
+	- **locks**
+		- lock and unlock methods divides 10 methods into blocks
 
 
 # Generics
