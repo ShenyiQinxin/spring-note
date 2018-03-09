@@ -288,8 +288,34 @@ NavigableSet<K> descendingKeySet(); }
 		- after modification and the **value is changed** by a thread, then repeforms **operation** and the value is updated.
 	- **locks**
 		- lock and unlock methods divides 10 methods into blocks
-
-
+### Capacity of a Java Collection
+- initial capacity : number of buckets in the HashMap/HashSet
+- load factor: 0.75 
+- when the number of entries  exceeds *icapacity*lf* , the hash table is rehashed and the hash table has approximately twice the number of buckets.- 
+### UnsupportedOperationException
+when an implementation class of Collection interface does not support a certain method from Collection and this method is called, then it throws the 
+`UnsupportedOperationException`
+```java
+List<String> list =Arrays.asList(new String[]{"str1", "str2"});
+list.remove();
+//throws UnsupportedOperationException
+```
+### fail-safe vs. fail-fast iterators
+- fail-fast iterator : it throws a CocurrentModificationException when there is a modification while iterting the collection.
+- fail-safe iterator: it copies the collection and iterates over the copied collection , so even the collection is modified, iterator wont throw an exception.
+```java
+//fast-safe
+ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+map.put("key1", "value1");
+map.put("key2", "value2");
+map.put("key3", "value3");
+while (iterator.hasNext()) { 
+	System.out.println(map.get(iterator.next())); 
+	//while iterating, the map is being put a new element
+	map.put("key4", "value4");
+}
+```
+### atomic operations
 # Generics
 # OOP
 
