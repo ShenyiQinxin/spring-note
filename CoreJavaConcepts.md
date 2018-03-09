@@ -171,7 +171,7 @@ interface DeQue<E> extends Queue<E> {
 	E removeFirstOccurrence();//exception
 	E removeLastOccurrence();//exception
 ```
-> BlockingQueue : makes sure only when the queue is non-empty to retrieve and when the space is available when storing
+> BlockingQueue : makes sure only when the queue is non-empty to retrieve and when the space is available when storing. it meets the scenario where consumer needs to wait for an element of producer being available before get that element.
 ```java
 interface BlockingQueue<E> extends Queue<E>{
 	//waiting up to the specified wait time
@@ -316,7 +316,11 @@ while (iterator.hasNext()) {
 }
 ```
 ### atomic operations
-# Generics
+an operation is all-or-null.
+- an example of **i++** is not atomic, cus there are 3 steps, any multi-thread could get to any step, so it is not atomic. 
+- **AtomicInteger** is an thread-safe, its operation **incrementAndGet()** makes sure the operation is atomic.
+# Genericst
+###
 # OOP
 
 ```java
