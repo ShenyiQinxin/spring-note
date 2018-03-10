@@ -319,11 +319,164 @@ while (iterator.hasNext()) {
 an operation is all-or-null.
 - an example of **i++** is not atomic, cus there are 3 steps, any multi-thread could get to any step, so it is not atomic. 
 - **AtomicInteger** is an thread-safe, its operation **incrementAndGet()** makes sure the operation is atomic.
-# Genericst
-###
-# OOP
-
+# Generics
+>generic classes/methods can work with different types of elements.
+### why do Generics make programs more flexible?
 ```java
+class MyListGeneric<T> {
+	private List<T> list;
+	void add(T e){..}
+	void remove(T e){...}
+	T get(int index){...}
+}
+
+MyListGeneric<String> stringList = new MyListGeneric<String>();
+stringList.add("str1");
+MyListGeneric<Integer> integerList = new MyListGeneric<Integer>();
+integerList.add(1);
+```
+### Generics restriction
+>class MyListGeneric only can be with **any class extends Number** i.e. Float, Integer, Double etc.
+```java
+class MyListGeneric<T extends Number> {
+```
+>class MyListGeneric only can be with **any class that is a super class of Number** class
+```java
+class MyListGeneric<T super Number> {
+```
+> - using ? , it makes List of Shape works with different types of subclasses of Shape and Shape itself. i.e. Square, Circle, Triangle, Rectangle etc.
+> - But with upper bounded list or just wildcards ?, we are not allowed to add any object to the list except null.
+> - java compiler allows to add lower bound object types to the list.
+```java
+List<? extends Shape> //no adding except null
+List<?> //not adding except null
+new List<? super Number>().add(1);
+```
+### Generics in Method
+`<X extends Number>` must be **before return type** `X`
+>X could be parameter type, return type, variable type
+```java
+static <X extends Number> X doSomething(X number){ 
+	X result = number;
+	//do something with result
+	return result;
+}
+```
+# OOP
+### toString()
+it is used for us to override it, so it prints the content of the object when the object is called and printed out. By default it returns the hashcode of the object
+```java
+Animal animal = new Animal("Tommy","Dog");
+System.out.println(**animal**);
+//Before overriden: com.rithus.Animal@f7e6a96
+public String toString() {
+	return "Animal [name=" + name + ", type=" + type
+	+ "]";
+}
+//After overriden: Animal [name=Tommy, type=Dog]
+```
+### == & equals()
+By default, `ref1.equals(ref2)` is the same as `ref1==ref2`. They check if the two references are pointing to the same object.
+```java
+//client1 and client2 are pointing to different client objects. 
+System.out.println(client1 == client2);//false
+Client client3 = client1;
+System.out.println(client1 == client3);//true
+```
+but after overriding the `equals()`, it checks 2 references are pointing 2 objects which have the same content as per `equals()` implemented.
+```java
+public boolean equals(Object obj) { 
+Client other = (Client) obj;
+	if (id != other.id)
+	return false; 
+return true;
+}
+
+System.out.println(client1 == client2);//true
+```
+>when implementing `equals` method, we must consider: 
+```java
+x.equals(x) == true; and mutiple invocations return the same result
+x.equals(y); y.equals(x);
+x.equals(y); y.equals(z); => x.equals(z)
+x.equals(null) == false;
+```
+### hashcode() implementation
+>- it decides which bucket of object should be placed into, evenly distributes objects
+```java
+if obj1.equals(obj2) == true, then obj1.hashCode() == obj2.hashCode()
+if obj is not changed, obj.hashCode() should be the same value in muti-invocation
+if obj1.equals(obj2) == false, then obj1.hashCode() ==/!= obj2.hashCode()
+```
+### inheritance 
+is-a relationship
+### Method Overloading
+>in a class or its subclasses, same name, differnt params , for others not specific. i.e. constructors
+### Method overriding
+>sub class and super class have methods with the same signature but usually different implementation
+>i.e. `HashMap and AbstractMap size() method`
+
+### Super class can refer the object of any of its subclass
+```java
+Actor actor1 = new Comedian();
+Actor actor2 = new Hero();
+```
+### multi inheritance
+- classes no; interfaces yes; a class can implements mutliple interfaces
+- they can have inheritance chain
+
+### interface
+> interfaces are **public abstract**
+> variables of interfaces are **public static final**
+> methods of interfaces are **public abstract**
+```java
+default void method5() { System.out.println("Method5");
+}
+```
+### abstract class
+- provides common implemented funtionality
+- subclasses implement the abstract methods
+- could be fully implemented but mainly partially implemented
+### Abstract class vs. Interface
+|  |Abstract class |Interface|
+|--|--|--|
+| modifier |any visibility  |public abstract methods/public static final variables
+|abstract method|could have non-abstract methods|basically abstract except default method
+|subclass method visibility|implements methods with same or wider visibility|all public
+|subclass|single inheritance|muti-inheritance for class-interface/interface-interface
+### constructor
+|default | non-default|
+|--|--|
+|public ClassName(){ super();}|public ClassName(param){ super();}|
+|provided if not have one|if there is a non-default,nor the default, then it is the one who instantiates the instance |
+>constructor cannot be called from a normal method
+
+### Polymorphism
+- Same code (from super interface and super class) but (subclass) implements differnt behaviors
+- Implemented by **methods overridin**g among sub and super classes, so that superclass/interface could refer subclass instances
+```java
+Human artist = new Artist();
+artist.perform();//painting -- the behavior of the artist
+artist.score();//compile error. cannot be invoked, cus Human does not have this behavior
 ```
 
-> Written with [StackEdit](https://stackedit.io/).
+### instanceof
+>it checks if an object is of a perticular type in the inheritance hierachy
+```java
+subClass instanceof SubClass);//true 
+subClass instanceof SuperClass);//true 
+subClassObj instanceof SuperClass);//true
+subClass2  instanceof SuperClassImplementingInteface);//true
+subClass2 instanceof Interface
+```
+### Cohesion n Coupling
+- low coupling : classes should be independent from each other. the changes in one class should not affect the code of other classes.
+- high cohesion: each class has single responsibility
+
+### Encapsulation
+variable properties are private, use public method to access it, and behavior logic is implemented in methods. Outside just call methods for class functionality and properties. Therefore, when implementation is changed, other code would not be broken.
+### Inner Class
+can be static, inside of  a class, or inside of a method.
+
+
+
