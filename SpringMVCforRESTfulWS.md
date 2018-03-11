@@ -1,37 +1,40 @@
 # Spring MVC for RESTful Web Services
 ## REST introduction
--  An  architectural style
--  REpresentational State **Transfer**
--  A best practice to transfer **web services** over **HTTP** in a form of representainal states
--  Expose resources through URIs using nouns
-- Operations are perfomed by a set of HTTP methods : GET, PUT, POST, DELETE
+1. -  An  architectural style- REpresentational State **Transfer**
+	-  A best practice to transfer **web services** over **HTTP** in a form of representainal states
+2. -  Expose **resources** through URIs using **nouns**
+3.  ** Operations are perfomed by a set of **HTTP methods : GET, PUT, POST, DELETE**
 i.e. update an order
 ```js
     PUT to /orders/123
     don't POST to /order/edit?id=123
 ```
--  Emphasizes  **scalability**
-- Resources can support multiple representations:  HTML, XML, JSON
-- Representations can link to other resources:    HATEOAS (Hypermedia As The Engine of Application State). RESTful responses contain the links you need, just like HTML pages do
+4. - Resources can support multiple **representations:  HTML, XML, JSON**
+5. - Representations contain **links** to other resources:    HATEOAS (Hypermedia As The Engine of Application State). RESTful responses contain the links you need, just like HTML pages do
+6. -  Emphasizes  **scalability**
+		- the scalability could be improved by load balancing and shared caches.
+8. -  HTTP **headers** and ****status codes** are responded back to clients
 - Stateless architecture  
     – No HttpSession usage  
     – GETs can be cached on URL  
     – Requires clients to keep track of state  
     – Part of what makes it scalable  
     – Looser coupling between client and server
--  HTTP headers and status codes communicate result to clients
+
 ## Spring MVC support for RESTful applications
 ### Request/Response Processing
 #### @RequestMapping/@GetMapping
 >same URL to be mapped to multiple methods
 ```java
-@RequestMapping(path="/orders", method=RequestMethod.GET) public void listOrders( ... ) {
+@RequestMapping(path="/orders", method=RequestMethod.GET) 
+public void listOrders( ... ) {
 
  // find all Orders and add them to the model 
 
 }
 
-@RequestMapping(path="/orders", method=RequestMethod.POST) public void createOrder( ... ) {
+@RequestMapping(path="/orders", method=RequestMethod.POST) 
+public void createOrder( ... ) {
 
  // process the order data from the request 
 
@@ -39,7 +42,7 @@ i.e. update an order
 ```
 >Alternatives
 ```java
-**@RequestMapping**(path="/accounts”, method=GET)
+@RequestMapping(path="/accounts”, method=GET)
 or @GetMapping("/accounts");
 
 @GetMapping  
@@ -49,29 +52,21 @@ or @GetMapping("/accounts");
 @PatchMapping
 ```
 >HTTP Status Code Support
-```
-    – Success: 200 OK  
-    – Redirect: 30x for Redirects  
-    – Client Error: 404 Not Found 
-    – Server Error: 500 (such as unhandled Exceptions)
-    
-   RESTful applications use many additional codes
-    
-    – Created Successfully: 201  
-    – HTTP method not supported: 405  
-    – Cannot generate response body requested: 406 
-    – Request body not supported: 415
-```
+ -  Success: 200 OK  : Created Successfully: 201
+   -  Redirect: 30x for Redirects  
+    -  Client Error: 404 Not Found . HTTP method not supported: 405 . Cannot generate response body requested: 406 . Request body not supported: 415
+  -  Server Error: 500 (such as unhandled Exceptions)
+   
+
 #### @ResponseStatus
 >- **@ResponseStatus** on void methods, Method returns a response with empty body (no-content )
 >- @ResponseStatus can be at class level, applying on all methods of the class
 ```java
 @RequestMapping(path="/orders/{id}", method=RequestMethod.PUT)
-@ResponseStatus(HttpStatus.NO_CONTENT) // 204  
+@ResponseStatus(HttpStatus.NO_CONTENT) // 204 enumerator  
 public void updateOrder(HttpServletRequest request) {
-
+ 
  Order order = getOrder(request);// Extract from request 
-
  orderService.updateOrder(order);
 }
 ```
@@ -82,7 +77,7 @@ public void updateOrder(HttpServletRequest request) {
 > `@EnableWebMvc or <mvc:annotation-driven/> ` 
 > Or define explicitly (allows you to register extra convertors)
 > Using `WebMvcConfigurer or <mvc/>`
-- @RequestBody
+- **@RequestBody**
 >converts the incoming data from XML/JSON 
 ```java
 @RequestMapping(path="/orders/{id}", method=RequestMethod.PUT) @ResponseStatus(HttpStatus.NO_CONTENT) // 204  
@@ -95,7 +90,7 @@ public void updateOrder(@RequestBody Order updatedOrder,
  orderManager.updateOrder(id, updatedOrder);
 }
 ```
-- @ResponseBody
+- **@ResponseBody**
 ```java
 @RequestMapping(path="/orders/{id}", method=RequestMethod.GET) @ResponseStatus(HttpStatus.OK) // 200  
 
@@ -130,29 +125,35 @@ Content-Length: 1456
 @Controller
 public class OrderController {  
 @RequestMapping(path="/orders/{id}", method=RequestMethod.GET) 
-public @ResponseBody Order getOrder(@PathVariable("id") long id) {
-
- return orderService.findOrderById(id);
-  } 
+public @ResponseBody Order getOrder(@PathVariable("id") long id){
+	
+	return orderService.findOrderById(id);
+} 
 ... 
 }
 
 @RestController 
-public class OrderController { @RequestMapping(path="/orders/{id}", method=RequestMethod.GET) public Order getOrder(@PathVariable("id") long id) {
+public class OrderController { 
+	@RequestMapping(path="/orders/{id}", method=RequestMethod.GET) 
+	public Order getOrder(@PathVariable("id") long id) {
 
- return orderService.findOrderById(id);
-  } 
+	return orderService.findOrderById(id);
+ } 
 ...
 }
 ```
 ### Accessing Request/Response Data 
-#### HttpEntity & ResponseEntity
+>To build responses explicitly
+#### `ResponseEntity extends HttpEntity`
 ```java
 // Want to return a String as the response-body 
-HttpHeaders headers = new HttpHeaders(); headers.setContentType(MediaType.TEXT_PLAIN); 
+HttpHeaders headers = new HttpHeaders(); 
+headers.setContentType(MediaType.TEXT_PLAIN); 
 HttpEntity<String> entity = new HttpEntity<String>("Hello Spring", headers);
 //======================
-// ResponseEntity (since Spring 4.1) supports a “fluent” API ResponseEntity<String> response =
+// ResponseEntity (since Spring 4.1) supports a “fluent” API 
+//adds a HttpStatus status code
+ResponseEntity<String> response =
 ResponseEntity.ok()
                .contentType(MediaType.TEXT_PLAIN) 
                .body("Hello Spring");
@@ -182,30 +183,32 @@ URI location = UriComponentsBuilder
 @ResponseStatus  
 HTTP Message Converters:  
 @RequestBody, @ResponseBody
-HttpEntity
-ResponseEntity
+ResponseEntity, HttpEntity
 UriComponentsBuilder
 ```
 >Controllers for GET, POST, PUT and DELETE
 >Retrieving a Representation: GET
 ```java
 @GetMapping(path="/orders/{id}")  
-public @ResponseBody Order getOrder(@PathVariable("id") long id){
+public **@ResponseBody** Order getOrder(@PathVariable("id") long id){
 	return orderService.findOrderById(id); 
 }
 ```
 >Creating a new Resource: POST
->`ServletUriComponentsBuilder.fromCurrentRequestUri `– Returns a `UriComponentsBuilder` initialized to URL of current Controller method  
+>- `ServletUriComponentsBuilder.fromCurrentRequestUri `– Returns a `UriComponentsBuilder` initialized to URL of current Controller method  
 >- Useful as our new resource is a sub-path of the POST URL
 ```java
-@PostMapping(path="/orders/{id}/items") @ResponseStatus(HttpStatus.CREATED) // 201  
-public ResponseEntity<Void> createItem(@PathVariable("id") long id, @RequestBody Item newItem) {
+@PostMapping(path="/orders/{id}/items") 
+**@ResponseStatus**(HttpStatus.CREATED) // 201  
+public **ResponseEntity**<Void> createItem(
+@PathVariable("id") long id, 
+**@RequestBody** Item newItem) {
 
- // Add the new item to the order 
+// Add the new item to the order 
 orderService.findOrderById(id).addItem(newItem); 
 
- // Build the location URI of the new item 
- URI location = ServletUriComponentsBuilder
+// Build the location URI of the new item 
+ URI location = **ServletUriComponentsBuilder**
  .fromCurrentRequestUri()
  .path("items/{itemId}")
  .buildAndExpand(newItem.getId()).toUri();
@@ -214,21 +217,20 @@ return ResponseEntity.created(location).build(); }
 ```
 >Updating existing Resource: PUT
 ```java
-@PutMapping(path="/orders/{orderId}/items/{itemId}") @ResponseStatus(HttpStatus.NO_CONTENT) // 204  
+@PutMapping(path="/orders/{orderId}/items/{itemId}") 
+**@ResponseStatus**(HttpStatus.NO_CONTENT) // 204  
 public void updateItem(@PathVariable("orderId") long orderId,
 @PathVariable("itemId") String itemId, 
-@RequestBody Item item) {
+**@RequestBody** Item item) {
    orderService.findOrderById(orderId.updateItem(itemId, item); 
-
 }
 ```
 >Deleting a Resource: DELETE
 ```java
-@DeleteMapping(path="/orders/{orderId}/items/{itemId}") @ResponseStatus(HttpStatus.NO_CONTENT) // 204  
+@DeleteMapping(path="/orders/{orderId}/items/{itemId}") **@ResponseStatus**(HttpStatus.NO_CONTENT) // 204  
 public void deleteItem(@PathVariable("orderId") long orderId,
 @PathVariable("itemId") String itemId) {
  orderService.findOrderById(orderId).deleteItem(itemId); 
-
 }
 ```
 
@@ -313,7 +315,8 @@ public @ResponseBody Order getOrder(@PathVariable("id") long id) {
  return orderService.findOrderById(id);
 } 
 //view method calls RESTful method
-@GetMapping(path="/orders/{id}") public String getOrder(Model model, @PathVariable("id") long id) { 
+@GetMapping(path="/orders/{id}") 
+public String getOrder(Model model, @PathVariable("id") long id) { 
 
 }
 
@@ -357,7 +360,8 @@ return "orderDetails"; // View name
 ```java
 // A link can be built with a relationship name  
 // Use withSelfRel() for a self link  
-Link link = ControllerLinkBuilder.linkTo(AccountController.class).slash(accountId).slash("transfer")).withRel("transfer"); 
+Link link = ControllerLinkBuilder.linkTo(AccountController.class)
+.slash(accountId).slash("transfer")).withRel("transfer"); 
 
 link.getRel(); // => transfer 
 link.getHref(); // => http://.../account/12345/transfer
@@ -369,14 +373,17 @@ link.getHref(); // => http://.../account/12345/transfer
 >Only HAL supported currently
 > Hypertext Application Language (HAL)
 ```java
-@Controller @EnableHypermediaSupport(type=HypermediaType.HAL) public class OrderController {
+@Controller @EnableHypermediaSupport(type=HypermediaType.HAL) 
+public class OrderController {
 
-@GetMapping(value="/orders/{id}") public @ResponseBody Resource<Order>
+@GetMapping(value="/orders/{id}") 
+public @ResponseBody Resource<Order>
 
  getOrder(@PathVariable("id") long id) {
-      Links\[\] = ...; // Some links (see previous slide) 
+      Links[] = ...; // Some links (see previous slide) 
 
-return new Resource<Order> (orderService.findOrderById(id), links);
+return new Resource<Order> (
+orderService.findOrderById(id), links);
 
 } }
 ```
