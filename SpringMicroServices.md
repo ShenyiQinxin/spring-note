@@ -78,10 +78,10 @@
 ![enter image description here](https://user-images.githubusercontent.com/32177380/36935709-f05e4efa-1ec8-11e8-81c7-2d9ad9d1a8dc.png)
 
 - Cloud Integration, Dynamic Reconfiguration, Service Discovery, Security, Data Ingestion
- > services find each other: service discovery server- **Eureka**
- > - returns the location of multiple instances
+ >- services find each other: service discovery server- **Eureka**
+ >  returns the location of multiple instances
  > 
-  > multiple instances for fault-tolerance and load-sharing:  Client-side Load Balancing - **Ribbon**
+  >- multiple instances for fault-tolerance and load-sharing:  Client-side Load Balancing - **Ribbon**
   > 
   > RestTemplate
   > - with Service-discovery and load-balancing built-in
@@ -90,48 +90,39 @@
 
 ## Building a Simple Microservice System
 > Discovery Service **Eureka** 
-> registers Accounts**MicroService** (Producer) with Eureka
+> Eureka registers Accounts-MicroService (Producer) with Eureka
 > &
->performs lookup for front-end web application (Consumer) 
+>Eureka performs lookup for front-end web application (Consumer) 
 >
 > **Consumer** requests data from **Producer**
 > through RESTful API
-> 
+![enter image description here](https://user-images.githubusercontent.com/32177380/37254503-285ba7ba-2515-11e8-8a3b-deec29c11db5.png) 
 ### Maven Dependencies
 ```xml
 <parent>  
-<groupId>org.springframework.cloud</groupId\> Parent <artifactId>spring-cloud-starter-parent</artifactId\> <version>Brixton.SR4</version>
-
-</parent\> “Release train” = a consolidated <dependencies\> set of releases
-
-<dependency\> <groupId>org.springframework.boot</groupId\> <artifactId>spring-boot-starter-web</artifactId>
-
-</dependency\> <dependency>
-
-<groupId>org.springframework.cloud</groupId>
-
-<artifactId>spring-cloud-starter</artifactId\> </dependency>
-
-<dependency\> <groupId>org.springframework.cloud</groupId\> <artifactId>spring-cloud-starter-eureka</artifactId>
-
-</dependency\> </dependencies>
+<artifactId>spring-cloud-starter-parent</artifactId> 
+...
+<dependency> 
+<artifactId>spring-boot-starter-web</artifactId>
+<artifactId>spring-cloud-starter</artifactId> 
+<artifactId>spring-cloud-starter-eureka</artifactId>
+...
 ```
 ### Eureka Server using Spring Cloud
->Eureka Server
+>**Eureka Server** perfoms discovery service
+>**@EnableEurekaServer**
 ```java
 @SpringBootApplication 
-**@EnableEurekaServer**  
-public  class  EurekaApplication  {
-public  static  void  main(String\[\]  args)  {
+@EnableEurekaServer  
+public class EurekaApplication  {
+public static void main(String[]  args)  {
  SpringApplication.run(EurekaApplication.class, args);
 } }
 ```
 > dependency
 ```xml
 <dependency>
-<groupId>org.springframework.cloud</groupId>
 <artifactId>spring-cloud-starter-eureka-server</artifactId>
-</dependency>
 ```
 >application.yml
 ```yml
@@ -141,17 +132,17 @@ eureka:
 	instance:
 		hostname: localhost
 	client: #not a client
-		registerWithEureka: false
+		registerWithEureka: false //it is Eureka itself
 		fetchRegistry: false
 ```
 ### Accounts Producer Microservice
->Accounts Server (microservice)
->Microservice declares itself as an available service 
-– Using @EnableDiscoveryClient  
-– Registers using its application name
+>Accounts Server (producer)
+>declares itself as an available service and register with Eureka
+– Using **@EnableDiscoveryClient**  
+– Registers using its logic service name
 ```java
 @SpringBootApplication 
-@**EnableDiscoveryClient**  
+@EnableDiscoveryClient  
 public  class  AccountsApplication  {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class,  args); 		} 
@@ -169,29 +160,23 @@ eureka
 			#eureka server url	
 ```
 ### Consumer Service
->enable the consumer to find the producer
->also allows service lookup(query Eureka to find microservices)
+>- declares itself as an available service and register with Eureka using
+>**@EnableDiscoveryClient**
+>- annotating **@LoadBalanced** allows load-balanced (**Ribbon**) service lookup (consumer query Eureka to find producer) 
 ```java
 @SpringBootApplication
-@**EnableDiscoveryClient**
+@EnableDiscoveryClient
 public class FrontEndApplication { 
+	public  static  void  main(String[]  args)  {
+		SpringApplication.run(Application.class, args);
+	}
 
-public  static  void  main(String[]  args)  {
-
- SpringApplication.run(Application.class, args);
-
-}
-
-//  Will  use  this  template  to  access  the  microservice
-
-// -   Create using @LoadBalanced – an @Qualifier  
- //   – Spring enhances it to do service lookup & load-balancing
-
+//  Declares  template  to  access  the  microservice
+//  - Create using @LoadBalanced – an @Qualifier  
+//  – Spring enhances it to do service lookup & load-balancing
 @Bean @LoadBalanced 
 public  RestTemplate  restTemplate()  {
-
-return  new  RestTemplate(); }
-
+	return  new  RestTemplate(); }
 }
 ```
 >
@@ -203,12 +188,11 @@ public  class  RemoteAccountManager  implements  AccountService  {
 // It performs a load-balanced lookup  
 //-   Must inject using same qualifier  
 //   – If there are multiple RestTemplates you get the right one – Can be used to access multiple microservices
-@Autowired 
-@LoadBalanced 
-RestTemplate  restTemplate;
+	@Autowired  @LoadBalanced 
+	RestTemplate  restTemplate;
 public Account findAccount(String id) { 
 //  Fetch  data  
-return  restTemplate.getForObject("http://accounts-microservice/accounts/{id}", Account.class,  id);
+	return  restTemplate.getForObject("http://account-microservice/accounts/{id}", Account.class,  id);
 
 } }
 ```
