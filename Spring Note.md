@@ -4,7 +4,7 @@
 - Transaction
 ## The Role of Spring in Enterprise Data Access
 -   Steps Required  
-    – Access a data source and establish a connection – Begin a transaction  
+    – Access a data source and establish a connection – Begin a transaction 
     – Do the work – execute business logic  
     – Commit or rollback the transaction  
     – Close the connection
@@ -21,7 +21,7 @@ public class TransferServiceImpl implements TransferService {
 public void transfer(...) { // your application logic }
 
 }
- ```
+ ``` 
  - **Template** Design Pattern
 	  - JdbcTemplate
 	  - JmsTemplate
@@ -102,12 +102,9 @@ final DataSourceInitializer initializer = new DataSourceInitializer();
 initializer.setDataSource(dataSource); 
 initializer.setDatabasePopulator(databasePopulator());
 return initializer; }
-}
-```
 
-## Implementing Caching
 >a key-value store = Map
-> Where do we use this caching?
+> Where do we use this caching
 – Any method that always returns the same result for the same argument(s)
 i.e. Calculate data on the fly, Execute a database query, Request data via RMI, JMS, a web-service ...
 - AOP and FactoryBean
@@ -152,7 +149,10 @@ public CacheManager cacheManager() {
 	SimpleCacheManager cacheManager = new SimpleCacheManager("topAuthors", "topBooks"); 
 	return cacheManager;
 }
+```}
 ```
+
+## Implementing Caching
 ## NoSQL databases
 >Non-tabular data
 ## Summary
@@ -444,17 +444,18 @@ public class RewardNetworkImpl implements RewardNetwork {
 - dirty reads : see the results of an uncommited unit of work
 - non-repeatable reads : a row is read twice in the same transaction, results are different
 - phantom reads: All the rows in the query have the same value before and after, but for the same query different result is queried i.e. different rows are selected. cus the transaction is not concurrent.
-## Transaction Propagation
+ropagation
 >ClientServiceImpl calls AccountServiceImpl, both of them are transactional?
 Should everything run into a single transaction? – Should each service have its own transaction?
 
-- 7 levels of propagation
+- 7 levels of p## Transaction Propagation
 ```java
 @Transactional( propagation=Propagation.REQUIRES_NEW )
 ```
 | Propagation | there is a current tx |there is not a current tx
-|--|--|--|
-|REQUIRED|  Execute within a current transaction(**use the existing one**)| create a new one if none exists
+|--meaning |
+|--|--|
+|REQUIRED|  Execute within a current transaction(**use the existing one**)|, create a new one if none exists|
 |REQUIRES_NEW |**always Create a new transaction**, suspending the current transaction if one exists|**always Create a new transaction**,
 |MANDATORY|use current one|exception
 |NEVER|exception|run method out of any txn
@@ -560,5 +561,5 @@ public void testRewardAccountFor() { … }
 @Transactional //default transactionManager
 ```
 
-
+### Propagation Options
 
