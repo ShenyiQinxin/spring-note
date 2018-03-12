@@ -1,15 +1,32 @@
+# Data Management
 - Data Management
 - Spring JDBC
 - Transaction
------
-# Data Management
 ## The Role of Spring in Enterprise Data Access
- - Declarative **Transaction Management** by @Transactional 
+-   Steps Required  
+    – Access a data source and establish a connection – Begin a transaction 
+    – Do the work – execute business logic  
+    – Commit or rollback the transaction  
+    – Close the connection
+    
+-   Spring Advantages  
+    - No code to implement (classic cross-cutting concern)  
+    - No connection or session leakage  
+    - Throws own exceptions, independent of underlying API
+    - Transaction management behavior is added around your code
+ - Declarative **Transaction Management** by **@Transactional** 
+ ```java
+public class TransferServiceImpl implements TransferService { 
+@Transactional // marks method as needing a txn  
+public void transfer(...) { // your application logic }
+
+}
+ ``` 
  - **Template** Design Pattern
 	  - JdbcTemplate
 	  - JmsTemplate
 	  - RestTemplate
-	  - get data source manually
+	  - get data source manually: **DataSourceUtils **
 	```java
 	  DataSourceUtils.getConnection(dataSource)
 	  ```
@@ -21,7 +38,7 @@
 ## Spring's DataAccessExceptionHierarchy
 - hides JPA/Hibernate/JDBC
 - RuntimeException
-- DataAccessException
+- **DataAccessException**
 
 B[DataAccessException] --> A[RuntimeException]
 C[DataAccessResource FailureException] --> B
@@ -30,48 +47,125 @@ E[CleanupFailure DataAccessException] --> B
 F[OptimisticLocking FailureException] --> B
 
 ## Using Test Databases
-- Embedded Database Builder i.e. HSQL/H2/Derby
+- **EmbeddedDatabaseBuilder** i.e. HSQL/H2/Derby
 ```Java
 @Bean
 public DataSource dataSource() {
 EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-return builder.setName("testdb")
+return builder
+.setName("testdb")
 .setType(EmbeddedDatabaseType.HSQL)
 .addScript("classpath:/testdb/schema.db")
 .addScript("classpath:/testdb/test-data.db").build();
 }
 ```
 - JDBC Namespace Equivalent
-1. ```<jdbc:embedded-database>```
-2. ```<jdbc:initialize-database>```
-3. Java configuration on initializing and existing test DB
+1. ```<jdbc:embedded-database id=“dataSource” type=“H2”>```
+2. ```<jdbc:initialize-database data-source=“dataSource”>```
+>embedded database
+```xml
+<bean class=“example.order.JdbcOrderRepository” \> <property name=“dataSource” ref=“dataSource” />
+
+</bean>
+
+<jdbc:embedded-database id=“dataSource” type=“H2”\> <jdbc:script location=“classpath:schema.sql” /\> <jdbc:script location=“classpath:test-data.sql” />
+
+</jdbc:embedded-database>
+```
+>other data source 
+```xml
+<bean id=“dataSource” class=“org.apache.commons.dbcp.BasicDataSource”\> <property name=“url” value=“${dataSource.url}” />  
+<property name=“username” value=“${dataSource.username}” />  
+<property name=“password” value=“${dataSource.password}” />
+</bean>
+
+<jdbc:initialize-database data-source=“dataSource”\> <jdbc:script location=“classpath:schema.sql” /\> <jdbc:script location=“classpath:test-data.sql” />
+</jdbc:initialize-database>
+```
+- Java configuration on initializing an existing test DB
 ```java
 @Configuration
 public class DatabaseInitializer {
 @Value("classpath:schema.sql") private Resource schemaScript;
 @Value("classpath:test-data.sql") private Resource dataScript;
+
 private DatabasePopulator databasePopulator() {
 final ResourceDatabasePopulator populator =
 new ResourceDatabasePopulator();
 populator.addScript(schemaScript);
 populator.addScript(dataScript);
 return populator;
+
+@Bean
+public DataSourceInitializer anyName(final DataSource dataSource) { 
+final DataSourceInitializer initializer = new DataSourceInitializer(); 
+initializer.setDataSource(dataSource); 
+initializer.setDatabasePopulator(databasePopulator());
+return initializer; }
+
+>a key-value store = Map
+> Where do we use this caching
+– Any method that always returns the same result for the same argument(s)
+i.e. Calculate data on the fly, Execute a database query, Request data via RMI, JMS, a web-service ...
+- AOP and FactoryBean
+	- Mark methods cacheable.  fetch data from cache using key, method not executed
+	- caching key(s)
+	- Name of cache to use (multiple caches supported) 
+	- Define one or more caches in Spring configuration
+>annotation is used on your own code 
+```java
+@Cacheable(value="topBooks", key="#refId.toUpperCase()", condition="#title.length<32") 
+public Book findBook(String refId) {...}
+//clear cache before method invoked
+@CacheEvict(value="topBooks")
+public void loadBooks() { ... }
+//EnableCaching
+@Configuration @EnableCaching
+public class MyConfig {
+	@Bean public BookService bookService() { ... }
+```
+>xml enable caching
+```xml
+<cache:annotation-driven />  
+<bean id="bookService" class="example.BookService"/>
+```
+>3rd party code
+```xml
+<bean id="bookService" class="example.BookService"> 
+<aop:config>
+<aop:advisor advice-ref="bookCache" pointcut="execution(* *..BookService.*(..))"/>
+</aop:config>  
+<cache:advice id="bookCache" cache-manager="cacheManager">
+<cache:caching cache="topBooks">  
+<cache:cacheable method="findBook" key="#refId"/> 
+<cache:cache-evict method="loadBooks" all-entries="true" />
+<cache:caching> 
+</cache:advice>
+```
+```java
+//ConcurrentHashMap
+@Bean
+public CacheManager cacheManager() { 
+	SimpleCacheManager cacheManager = new SimpleCacheManager("topAuthors", "topBooks"); 
+	return cacheManager;
 }
+```}
 ```
 
 ## Implementing Caching
 ## NoSQL databases
+>Non-tabular data
 ## Summary
-– Enables layered architecture principles
-• Higher layers should not know about data management
+- Enables layered architecture principles
+	- Higher layers should not know about data management
 below
-– Isolate via Data Access Exceptions
-• Hierarchy makes them easier to handle
-– Provides consistent transaction management
-– Supports most leading data-access technologies
-• Relational and non-relational (NoSQL)
-– A key component of the core Spring libraries
-– Automatic caching facility
+- Isolate via Data Access Exceptions
+	- Hierarchy makes them easier to handle
+- Provides consistent transaction management
+- Supports most leading data-access technologies
+	- Relational and non-relational (NoSQL)
+- A key component of the core Spring libraries
+- Automatic caching facility
 
 
 ----------
@@ -83,18 +177,20 @@ below
  1. implementing JDBC based repository
 ```java
 public class JdbcCustomerRepository implements CustomerRepository {
-private JdbcTemplate jdbcTemplate;
-public JdbcCustomerRepository(DataSource dataSource) {
-this.jdbcTemplate = new JdbcTemplate(dataSource);
-}
-public int getCustomerCount() {
-String sql = "select count(*) from customer";
-return jdbcTemplate.queryForObject(sql, Integer.class);
-}
+	//create jdbcTemplate with data souce
+	private JdbcTemplate jdbcTemplate;
+	public JdbcCustomerRepository(DataSource dataSource) {
+	this.jdbcTemplate = new JdbcTemplate(dataSource);
+	}
+	//apply queries
+	public int getCustomerCount() {
+		String sql = "select count(*) from customer";
+		return jdbcTemplate.queryForObject(sql, Integer.class);
+	}
 }
 ```
 
- 2. Query execution
+ 2. simple queries execution
 ```java 
 //1 Query with no bind variables
 jdbcTemplate.queryForObject(sql, Date.class);
@@ -119,7 +215,7 @@ public List<Map<String,Object>> getAllPersonInfo() {
 3. Working with result sets
 - map relational data into domain objects (ResultSet to Account)
 - ORM alternative
-- RowMapper
+- implements **`RowMapper<T>`**
 ```java
 public Person getPerson(int id) {
 	return jdbcTemplate.queryForObject(
@@ -148,24 +244,24 @@ public List<Person> getAllPersons() {
 	});
 }
 ```
-- RowCallbackHandler 
+- implements **RowCallbackHandler** 
 	- no return object
 	- streaming rows to a file, converting rows to XML, filtering rows (SQL filtering is better), faster than JPA equivalent
 ```java
 public class JdbcOrderRepository {
-public void generateReport(final PrintWriter out) {
-// select all orders of year 2009 for a full report
-jdbcTemplate.query("select * from order where year=?",
-(RowCallbackHandler)(rs) ->
-{ out.write( rs.getString("customer") … ); },
-2016);
-}
+	public void generateReport(final PrintWriter out) {
+	// select all orders of year 2009 for a full report
+		jdbcTemplate.query("select * from order where year=?",
+			(RowCallbackHandler)(rs) ->
+			{ out.write( rs.getString("customer") … ); },
+			2016);
+	}
 }
 public interface RowCallbackHandler {
-void processRow(ResultSet rs) throws SQLException;
+	void processRow(ResultSet rs) throws SQLException;
 }
 ```
-- ResultSetExtractor
+- **ResultSetExtractor**
 	- processing an entire ResultSet at once to a single object
 	- You are responsible for iterating the ResultSet
 ```java
@@ -203,6 +299,7 @@ single object
 ----------
 
 - **jdbcTemplate.update()**
+>Inserting a new row  – Returns number of rows modified
 ```java
 public int insertPerson(Person person) {
 	return jdbcTemplate.update(
@@ -212,7 +309,9 @@ public int insertPerson(Person person) {
 	person.getLastName(),
 	person.getAge());
 }
-
+```
+>Updating an existing row
+```java
 public int updateAge(Person person) {
 	return jdbcTemplate.update(
 	“update PERSON set age=? where id=?”,
@@ -244,12 +343,12 @@ thrown
 
 # Transaction
  
-| ACID | set of tasks take place as a single transaction|
+| ACID | Set of tasks take place as a single transaction|
 |--|--|
-|atomic|unit of work is all-or-nothing operation |
-|consistent|db interity constaints are never voilated|
-|isolated|isolating transactions from each other|
-|durable|committed changes are permanent|
+|atomic|unit of work is **all-or-nothing** operation |
+|consistent|db **interity constaints** are never voilated|
+|isolated|**isolating transactions** from each other|
+|durable|**committed** changes are permanent|
 ## Java Transaction Management
 - jdbc, jms, jta, hibernate, jpa handle transaction differently and programatically in repository layer
 - local transaction - single resource
@@ -257,7 +356,7 @@ thrown
 
 ## Spring Transaction Management
 - Demarcation expressed declaratively via AOP
-- **PlatformTransactionManager** implementations
+- interface **PlatformTransactionManager** implementations
 	- DataSourceTransactionManager
 	- HibernateTransactionManager
 	- JpaTransactionManager
@@ -265,22 +364,23 @@ thrown
 - global and local use the same API
 ```java
 public class RewardNetworkImpl implements RewardNetwork {
-@Transactional
-public RewardConfirmation rewardAccountFor(Dining d) {
-// atomic unit-of-work
-}
+	@Transactional
+	public RewardConfirmation rewardAccountFor(Dining d) {
+	// atomic unit-of-work
+	}
 }
 @Configuration
 @EnableTransactionManagement
 public class TxnConfig {
 @Bean
 public PlatformTransactionManager transactionManager(DataSource ds);
-return new DataSourceTransactionManager(ds) {
+	return new DataSourceTransactionManager(ds);
 }
 //or
 <tx:annotation-driven/>
 
-<bean id=“transactionManager” class=”org.springframework.jdbc.datasource.DataSourceTransactionManager”>
+<bean id=“transactionManager” 
+class=”org.springframework.jdbc.datasource.DataSourceTransactionManager”>
 	<property name=“dataSource” ref=“dataSource”/>
 </bean>
 ```
@@ -289,19 +389,43 @@ return new DataSourceTransactionManager(ds) {
 [spring proxy ]--proxy wraps target object
 -->((RewardNetworkImpl))
 
-- @Transactional --class level and method level
+- @Transactional 
+	- class level
+	- method level
 ```java
 @Transactional(timeout=60)
 public class RewardNetworkImpl implements RewardNetwork {
-public RewardConfirmation rewardAccountFor(Dining d) {
-// atomic unit-of-work
-}
+	public RewardConfirmation rewardAccountFor(Dining d) {
+	// atomic unit-of-work
+	}
+//override attributes at method level
 @Transactional(timeout=45)
 public RewardConfirmation updateConfirmation(RewardConfirmantion rc) {
-// atomic unit-of-work
+	// atomic unit-of-work
 }
 }
 ```
+### Transaction config Local & Global
+- Local JDBC config
+	- Define local data source
+	- config DataSourceTransactionManager
+	- Purpose: 
+		- Integration testing; 
+		- Deploy to Tomcat or other servlet container
+- Global Java EE config
+	- Use container-managed datasource (JNDI)
+    - JTA Transaction Manager
+    - Purpose:  
+       - Deploy to JEE container
+ > No code changes Just configuration
+ ```xml
+<!--local-->
+<bean id="transactionManager" class="...DataSourceTransactionManager"\> ...
+<jdbc:embedded-database id="dataSource"\> ...
+<!--global-->
+<tx:jta-transaction-manager/> 
+<jee:jndi-lookup id=“dataSource” ... />
+ ```
 ##  Isolation Levels
 ```java
 public class RewardNetworkImpl implements RewardNetwork {
@@ -313,20 +437,31 @@ public class RewardNetworkImpl implements RewardNetwork {
 ```
 | isolation level |  | |
 |--|--|--|
-| READ_UNCOMMITTED | dirty reads  |lowest level|
-|READ_COMMITTED|no dirty reads| default for most db|
+|READ_UNCOMMITTED | dirty reads  |lowest level|
+|READ_COMMITTED|no dirty reads(only see committed info)| default for most DB|
 |REPEATABLE_READ|no dirty reads, non-repeatable reads prevented|
 |SERIALIZABLE|non-repeatable reads prevented, no phantom reads| highest level
 - dirty reads : see the results of an uncommited unit of work
 - non-repeatable reads : a row is read twice in the same transaction, results are different
-## Transaction Propagation
+- phantom reads: All the rows in the query have the same value before and after, but for the same query different result is queried i.e. different rows are selected. cus the transaction is not concurrent.
+ropagation
+>ClientServiceImpl calls AccountServiceImpl, both of them are transactional?
+Should everything run into a single transaction? – Should each service have its own transaction?
+
+- 7 levels of p## Transaction Propagation
 ```java
 @Transactional( propagation=Propagation.REQUIRES_NEW )
 ```
-| Propagation | meaning |
+| Propagation | there is a current tx |there is not a current tx
+|--meaning |
 |--|--|
-|REQUIRED|  Execute within a current transaction, create a new one if none exists|
-|REQUIRES_NEW |Create a new transaction, suspending the current transaction if one exists
+|REQUIRED|  Execute within a current transaction(**use the existing one**)|, create a new one if none exists|
+|REQUIRES_NEW |**always Create a new transaction**, suspending the current transaction if one exists|**always Create a new transaction**,
+|MANDATORY|use current one|exception
+|NEVER|exception|run method out of any txn
+|NOT_SUPPORTED|suspend current, run outside|run outside
+|SUPPORTS|use current|run outside
+|NESTED|create a new nested txn|create a new txn
 
 ## Rollback rules
 ```java
@@ -425,5 +560,6 @@ public void testRewardAccountFor() { … }
 @Transactional("myOtherTransactionManager")
 @Transactional //default transactionManager
 ```
+
 ### Propagation Options
 
