@@ -4,10 +4,10 @@
 - Transaction
 ## The Role of Spring in Enterprise Data Access
 -   Steps Required  
-    – Access a data source and establish a connection – Begin a transaction 
+    – Access a **data source** and establish a **connection** – Begin a transaction 
     – Do the work – execute business logic  
-    – Commit or rollback the transaction  
-    – Close the connection
+    – **Commit or rollback** the transaction  
+    – **Close** the connection
     
 -   Spring Advantages  
     - No code to implement (classic cross-cutting concern)  
