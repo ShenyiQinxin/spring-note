@@ -10,44 +10,28 @@
 - Secured item  
 >**Resource** that is being secured
 ### Authentication
-- mechanisms
->- custom UserDetailsService delegating to an existing DAO
->- Single-sign-on: OAuth,SAML, SiteMinder, Kerberos, JA-SIG Central Authentication Service 
->- LDAP 
->- JAAS Login Module
->- X.509 certificates
-- storage options for credential and authority information:
->Database, LDAP, in-memory (development)
+- mechanisms: basic, digest, form, X509, Cookies, Single-Sign-On
+- (credentials and authorities etc ) Storage options: DB, LDAP, in-memory, custom DAOs, properties file 
 ### Authorization
--   Authorization depends on authentication 
+-  Authorization depends on authentication 
 -  establish user identity -user role
-- deciding if a user can perform an action based on roles
-i.e.
-	- ADMIN can cancel orders  
-	-	MEMBER can place orders  
-    -	GUEST can browse the catalog
+- deciding if a user can perform an action (defined in methods) based on roles
+i.e. ADMIN , MEMBER, GUEST 
 ## Motivations of Spring Security
 - Spring Security supports securied achive be deployed in server
-- also supports application runing standalonely
-- Security **config** is in Spring config
+- also supports application runing standalonely ?( cus JAR file)?
+- Security **config** is in Spring config extends `WebSecurityConfigurerAdapter`
 - Security is **decoupled** from Spring business logic
 - authentication and authorization are decoupled
 - supports all comment **security mechanism**
-	- Basic, Form, X.509, Cookies, Single-Sign-On, etc.
-- Configurable **storage** options for user details (credentials and authorities): RDBMS, LDAP, custom DAOs, properties file, etc.
-- All the following can be customized  
-	- How a **principal** is defined  
-	- How **authorization** decisions are made
-	- Where security constraints are **stored**
-- consistency of authentication and authorization
 >
 ![enter image description here](https://user-images.githubusercontent.com/32177380/36878353-97f34168-1d8c-11e8-8405-c888a499995e.png)
 ## Spring Security in a Web Environment
-- SpringSecurityFilterChain -- DelegatingFilterProxy
-- @EnableWebSecurity
-- AbstractSecurityWebApplicationInitializer
-- <filter> in web.xml
-### Configuration in the ApplicationContext
+- SpringSecurityFilterChain -- DelegatingFilterProxy - <filter> in web.xml
+- `@EnableWebSecurity` for more controll `SecurityConfig extends WebSecurityConfigurerAdapter`
+- in Spring boot, do not need `@EnableWebSecurity`
+- for full control, extends AbstractSecurityWebApplicationInitializer
+### Java Configuration in the ApplicationContext
 ```java
 @Configuration  
 @EnableWebSecurity  
@@ -56,7 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 @Override
 //Web-specific security settings
 protected void configure(HttpSecurity http) throws Exception {  
-} Web-specific security settings
+} 
 
 @Autowired
 //General security settings : authentication manager etc
@@ -65,6 +49,7 @@ public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception 
 } }
 ```
 #### Adds specific authorization requirements to URLs
+> `authorizeRequests()`
 > first match is used, put specific matches first 
 ```java
 protected void configure(HttpSecurity http) throws Exception { 
@@ -75,6 +60,7 @@ http.authorizeRequests() .antMatchers("/css/**","/images/**","/javascript/**").p
 .antMatchers("/customers/**").anonymous();
 ```
 #### Specifying login and logout
+>`authorizeRequests()`
 ```java
 protected void configure(HttpSecurity http) throws Exception { 
 http.authorizeRequests() .antMatchers("/aaa*").hasRole("ADMIN")
@@ -87,12 +73,13 @@ http.authorizeRequests() .antMatchers("/aaa*").hasRole("ADMIN")
 ```
 ### Login Security
 ```html
-<c:url var=’loginUrl’value=’/login.jsp’ /\> <form:form action=“${loginUrl}” method=“POST”>
+<c:url var=’loginUrl’value=’/login.jsp’ /> 
+<form:form action=“${loginUrl}” method=“POST”>
 
-<input type=“text” name=“username”/\> <br/>  
-<input type=“password” name=“password”/\> <br/>
+<input type=“text” name=“username”/> <br/>  
+<input type=“password” name=“password”/> <br/>
 
-<input type=“submit” name=“submit” value=“LOGIN”/\> </form:form>
+<input type=“submit” name=“submit” value=“LOGIN”/> </form:form>
 ```
 ## Configuring Web Authentication
 ### @Profile
@@ -103,18 +90,19 @@ protected void configure(HttpSecurity http) throws Exception {
 http.authorizeRequests().antMatchers("/resources/**").permitAll(); }
 
 }
+//using in-memory provider
 @Configuration @EnableWebSecurity
 @Profile(“development”)
 public class SecurityDevConfig extends SecurityBaseConfig {  
 @Autowired  
 public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 
-//using in-memory provider
-auth.inMemoryAuthentication().withUser("hughie").password("hughie").roles("GENERAL");
+	auth.inMemoryAuthentication().withUser("hughie").password("hughie").roles("GENERAL");
 
 } }
 
 //using database provider
+@Configuration @EnableWebSecurity
 @Profile(“production”)
 public class SecurityProdConfig extends SecurityBaseConfig {  
 @Autowired  
@@ -124,7 +112,7 @@ auth.jdbcAuthentication().dataSource(dataSource); }
 }
 ```
 ### configureGlobal()
-- sourcing users from a database
+- sourcing users from a database??
 i.e.
 ```java 
 usersByUsernameQuery();
@@ -134,8 +122,7 @@ groupAuthoritiesByUsername()
 - Password encoding
 	- sha-256, md5, bcrypt, salt (using a well-known string)
 ```java
-@Autowired DataSource dataSource;
-
+// user details manager configure
 @Autowired
 public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception { 
 
@@ -146,12 +133,20 @@ auth.inMemoryAuthentication()
 .and()
 .withUser("louie").password("louie").roles("SUPPORT");
 
+@Autowired DataSource dataSource;
+
+//encode password using sha-256
 auth.jdbcAuthentication()  
 .dataSource(dataSource)  
-//with "salt"
-//new StandardPasswordEncoder(“sodium-chloride”)
-//sha-256
 .passwordEncoder(new StandardPasswordEncoder());
+
+//encode password with "salt"
+//new StandardPasswordEncoder(“sodium-chloride”)
+auth.jdbcAuthentication()  
+.dataSource(dataSource)  
+.passwordEncoder(new StandardPasswordEncoder());
+
+
 
 }
 ```
@@ -163,7 +158,7 @@ auth.jdbcAuthentication()
 <%@  taglib  prefix="security" uri="http://www.springframework.org/security/tags"  %>
 
 //-------In JSF, Principal available in SpEL
-SpEL.  #{principal.username}
+//SpEL.  #{principal.username}
 
 //------Display properties of the Authentication object!
 <security:authentication property=“principal.username”/>
@@ -175,7 +170,7 @@ Click <a href=“/admin/deleteAll”>HERE</a> to delete all records.
 </security:authorize>
 
 //------Pattern that matches the URL and roles to be protected
-<security:authorize url=“/admin/deleteAll”\> TOP-SECRET INFORMATION  
+<security:authorize url=“/admin/deleteAll”> TOP-SECRET INFORMATION  
 Click <a href=“/admin/deleteAll”>HERE</a>
 </security:authorize>
 //In Spring config file
@@ -185,30 +180,25 @@ Click <a href=“/admin/deleteAll”>HERE</a>
 >JSR-250
 ```java
 @EnableGlobalMethodSecurity(jsr250Enabled=true)
-
 import  javax.annotation.security.RolesAllowed;
 
 public  class  ItemManager  { 
-@RolesAllowed({"ROLE_MEMBER",  "ROLE_USER"}) 
-public  Item  findItem(long  itemNumber)  {
-
-... }
-
+	@RolesAllowed({"ROLE_MEMBER",  "ROLE_USER"}) 
+	public  Item  findItem(long  itemNumber)  {
+	... }
 }
 ```
 >
 >@Secured
 ```java
 @EnableGlobalMethodSecurity(securedEnabled=true)
-
 import  org.springframework.security.annotation.Secured;
 public  class  ItemManager  { 
-//@Secured("ROLE_MEMBER") 
-//@Secured({"ROLE_MEMBER", "ROLE_USER"})
-@Secured("IS_AUTHENTICATED_FULLY") 
-public  Item  findItem(long  itemNumber)  {
-
-... }
+	//@Secured("ROLE_MEMBER") 
+	//@Secured({"ROLE_MEMBER", "ROLE_USER"})
+	@Secured("IS_AUTHENTICATED_FULLY") 
+	public  Item  findItem(long  itemNumber)  {
+	... }
 
 }
 ```
@@ -219,9 +209,10 @@ public  Item  findItem(long  itemNumber)  {
 
 import org.springframework.security.annotation.PreAuthorize;
 
-public class ItemManager { @PreAuthorize("hasRole('MEMBER')") public Item findItem(long itemNumber) {
-
-... }
+public class ItemManager { 
+	@PreAuthorize("hasRole('MEMBER')") 
+	public Item findItem(long itemNumber) {
+	... }
 
 }
 ```
