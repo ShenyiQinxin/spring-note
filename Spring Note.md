@@ -14,7 +14,7 @@
     - No connection or session leakage  
     - Throws own exceptions, independent of underlying API
     - Transaction management behavior is added around your code
- - Declarative **Transaction Management** by **@Transactional** 
+ - Declarative **Transaction Management** by **@Transactional** in service layer
  ```java
 public class TransferServiceImpl implements TransferService { 
 @Transactional // marks method as needing a txn  
@@ -26,7 +26,8 @@ public void transfer(...) { // your application logic }
 	  - JdbcTemplate
 	  - JmsTemplate
 	  - RestTemplate
-	  - get data source manually: **DataSourceUtils **
+	  - get data source manually: **DataSourceUtils** 
+	  
 	```java
 	  DataSourceUtils.getConnection(dataSource)
 	  ```
@@ -40,11 +41,11 @@ public void transfer(...) { // your application logic }
 - RuntimeException
 - **DataAccessException**
 
-B[DataAccessException] --> A[RuntimeException]
-C[DataAccessResource FailureException] --> B
-D[DataIntegrity ViolationException] --> B
-E[CleanupFailure DataAccessException] --> B
-F[OptimisticLocking FailureException] --> B
+[DataAccessException] --> [RuntimeException]
+[DataAccessResource FailureException] --> 
+[DataIntegrity ViolationException] --> 
+[CleanupFailure DataAccessException] --> 
+[OptimisticLocking FailureException] --> 
 
 ## Using Test Databases
 - **EmbeddedDatabaseBuilder** i.e. HSQL/H2/Derby
@@ -52,11 +53,10 @@ F[OptimisticLocking FailureException] --> B
 @Bean
 public DataSource dataSource() {
 EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
-return builder
-.setName("testdb")
-.setType(EmbeddedDatabaseType.HSQL)
-.addScript("classpath:/testdb/schema.db")
-.addScript("classpath:/testdb/test-data.db").build();
+	return builder.setName("testdb")
+		.setType(EmbeddedDatabaseType.HSQL)
+		.addScript("classpath:/testdb/schema.db")
+		.addScript("classpath:/testdb/test-data.db").build();
 }
 ```
 - JDBC Namespace Equivalent
@@ -64,22 +64,28 @@ return builder
 2. ```<jdbc:initialize-database data-source=“dataSource”>```
 >embedded database
 ```xml
-<bean class=“example.order.JdbcOrderRepository” \> <property name=“dataSource” ref=“dataSource” />
-
+<bean class=“example.order.JdbcOrderRepository”> 
+<property name=“dataSource” ref=“dataSource” />
 </bean>
 
-<jdbc:embedded-database id=“dataSource” type=“H2”\> <jdbc:script location=“classpath:schema.sql” /\> <jdbc:script location=“classpath:test-data.sql” />
+<jdbc:embedded-database id=“dataSource” type=“H2”> 
+<jdbc:script location=“classpath:schema.sql” /> 
+<jdbc:script location=“classpath:test-data.sql” />
 
 </jdbc:embedded-database>
 ```
->other data source 
+>DBMS data source 
 ```xml
-<bean id=“dataSource” class=“org.apache.commons.dbcp.BasicDataSource”\> <property name=“url” value=“${dataSource.url}” />  
+<bean id=“dataSource” class=“org.apache.commons.dbcp.BasicDataSource”> 
+ex??
+<property name=“url” value=“${dataSource.url}” />  
 <property name=“username” value=“${dataSource.username}” />  
 <property name=“password” value=“${dataSource.password}” />
 </bean>
 
-<jdbc:initialize-database data-source=“dataSource”\> <jdbc:script location=“classpath:schema.sql” /\> <jdbc:script location=“classpath:test-data.sql” />
+<jdbc:initialize-database data-source=“dataSource”> 
+<jdbc:script location=“classpath:schema.sql” /> 
+<jdbc:script location=“classpath:test-data.sql” />
 </jdbc:initialize-database>
 ```
 - Java configuration on initializing an existing test DB
@@ -90,19 +96,21 @@ public class DatabaseInitializer {
 @Value("classpath:test-data.sql") private Resource dataScript;
 
 private DatabasePopulator databasePopulator() {
-final ResourceDatabasePopulator populator =
-new ResourceDatabasePopulator();
-populator.addScript(schemaScript);
-populator.addScript(dataScript);
-return populator;
+	final ResourceDatabasePopulator populator =
+	new ResourceDatabasePopulator();
+	populator.addScript(schemaScript);
+	populator.addScript(dataScript);
+	return populator;
 
 @Bean
 public DataSourceInitializer anyName(final DataSource dataSource) { 
-final DataSourceInitializer initializer = new DataSourceInitializer(); 
-initializer.setDataSource(dataSource); 
-initializer.setDatabasePopulator(databasePopulator());
-return initializer; }
-
+	final DataSourceInitializer initializer = new DataSourceInitializer(); 
+	initializer.setDataSource(dataSource); 
+	initializer.setDatabasePopulator(databasePopulator());
+	return initializer; 
+}
+```
+## Caching
 >a key-value store = Map
 > Where do we use this caching
 – Any method that always returns the same result for the same argument(s)
@@ -114,11 +122,14 @@ i.e. Calculate data on the fly, Execute a database query, Request data via RMI, 
 	- Define one or more caches in Spring configuration
 >annotation is used on your own code 
 ```java
-@Cacheable(value="topBooks", key="#refId.toUpperCase()", condition="#title.length<32") 
+@Cacheable(value="topBooks", key="#refId.toUpperCase()", 
+condition="#title.length<32") 
 public Book findBook(String refId) {...}
+
 //clear cache before method invoked
 @CacheEvict(value="topBooks")
 public void loadBooks() { ... }
+
 //EnableCaching
 @Configuration @EnableCaching
 public class MyConfig {
@@ -133,13 +144,13 @@ public class MyConfig {
 ```xml
 <bean id="bookService" class="example.BookService"> 
 <aop:config>
-<aop:advisor advice-ref="bookCache" pointcut="execution(* *..BookService.*(..))"/>
+	<aop:advisor advice-ref="bookCache" pointcut="execution(* *..BookService.*(..))"/>
 </aop:config>  
 <cache:advice id="bookCache" cache-manager="cacheManager">
-<cache:caching cache="topBooks">  
-<cache:cacheable method="findBook" key="#refId"/> 
-<cache:cache-evict method="loadBooks" all-entries="true" />
-<cache:caching> 
+	<cache:caching cache="topBooks">  
+	<cache:cacheable method="findBook" key="#refId"/> 
+	<cache:cache-evict method="loadBooks" all-entries="true" />
+	</cache:caching> 
 </cache:advice>
 ```
 ```java
@@ -180,7 +191,7 @@ public class JdbcCustomerRepository implements CustomerRepository {
 	//create jdbcTemplate with data souce
 	private JdbcTemplate jdbcTemplate;
 	public JdbcCustomerRepository(DataSource dataSource) {
-	this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
 	}
 	//apply queries
 	public int getCustomerCount() {
@@ -217,6 +228,7 @@ public List<Map<String,Object>> getAllPersonInfo() {
 - ORM alternative
 - implements **`RowMapper<T>`**
 ```java
+//query a single row
 public Person getPerson(int id) {
 	return jdbcTemplate.queryForObject(
 	"select first_name, last_name from PERSON where id=?",
@@ -228,16 +240,23 @@ class PersonMapper implements RowMapper<Person> {
 		rs.getString("last_name"));
 	}
 }
-
+//query multi rows
 public List<Person> getAllPersons() {
 	return jdbcTemplate.query(
 	"select first_name, last_name from PERSON",
 	new PersonMapper());
 }
-
+class PersonMapper implements RowMapper<Person> {
+	public Person mapRow(ResultSet rs, int rowNum) throws SQLException{
+		return new Person(rs.getString("first_name"),
+		rs.getString("last_name"));
+	}
+}
+//query multi rows (lambda expression)
 public List<Person> getAllPersons() {
 	return jdbcTemplate.query(
 		"select first_name, last_name from PERSON",
+		//mapRow(ResultSet rs, int rowNum){return new Person(rs.getString("first_name"),rs.getString("last_name"));}
 		(rs, rowNum) -> {
 		return new Person(rs.getString("first_name"),
 		rs.getString("last_name"));
@@ -248,12 +267,22 @@ public List<Person> getAllPersons() {
 	- no return object
 	- streaming rows to a file, converting rows to XML, filtering rows (SQL filtering is better), faster than JPA equivalent
 ```java
+public  class  JdbcOrderRepository  {  
+	public  void  generateReport(Writer  out)  {
+	 jdbcTemplate.query("select  *  from  order  where  year=?",new  OrderReportWriter(out),  2009);
+	} 
+}
+class  OrderReportWriter  implements  RowCallbackHandler  { public  void  processRow(ResultSet  rs)  throws  SQLException  {
+
+//
 public class JdbcOrderRepository {
 	public void generateReport(final PrintWriter out) {
 	// select all orders of year 2009 for a full report
 		jdbcTemplate.query("select * from order where year=?",
+			//cast needed
 			(RowCallbackHandler)(rs) ->
-			{ out.write( rs.getString("customer") … ); },
+			{ //...out.write( rs.getString("customer")…detail implementation... ); 
+			},
 			2016);
 	}
 }
@@ -286,37 +315,36 @@ public class JdbcOrderRepository {
 ```
 - Summary of Callback Interfaces
 • **RowMapper**
-– Best choice when each row of a ResultSet maps to a
+– Best choice when **each row** of a ResultSet maps to a
 domain object
 • **RowCallbackHandler**
-– Best choice when no value should be returned from the
-callback method for each row, especially large queries
+– Best choice when **no value should be returned** from the
+callback method for each row, especially large queries. streaming rows to a file.
 • **ResultSetExtractor**
-– Best choice when multiple rows of a ResultSet map to a
-single object
+– Best choice when **multiple rows** of a ResultSet map to a single object
 
 
 ----------
 
 - **jdbcTemplate.update()**
->Inserting a new row  – Returns number of rows modified
+>**Inserting** a new row  – Returns number of rows modified
 ```java
 public int insertPerson(Person person) {
 	return jdbcTemplate.update(
-	“insert into PERSON (first_name, last_name, age)” +
-	“values (?, ?, ?)”,
-	person.getFirstName(),
-	person.getLastName(),
-	person.getAge());
+			“insert into PERSON (first_name, last_name, age)” +
+			“values (?, ?, ?)”,
+			person.getFirstName(),
+			person.getLastName(),
+			person.getAge());
 }
 ```
->Updating an existing row
+>**Updating** an existing row
 ```java
 public int updateAge(Person person) {
 	return jdbcTemplate.update(
-	“update PERSON set age=? where id=?”,
-	person.getAge(),
-	person.getId());
+			“update PERSON set age=? where id=?”,
+			person.getAge(),
+			person.getId());
 }
 ```
 ## Exception handling
@@ -349,12 +377,9 @@ thrown
 |consistent|db **interity constaints** are never voilated|
 |isolated|**isolating transactions** from each other|
 |durable|**committed** changes are permanent|
-## Java Transaction Management
-- jdbc, jms, jta, hibernate, jpa handle transaction differently and programatically in repository layer
-- local transaction - single resource
-- global/distributed transactions - separate transaction manager
 
-## Spring Transaction Management
+
+## Spring Transaction Management - resolve problems
 - Demarcation expressed declaratively via AOP
 - interface **PlatformTransactionManager** implementations
 	- DataSourceTransactionManager
@@ -363,12 +388,15 @@ thrown
 	- ...
 - global and local use the same API
 ```java
+//service 
 public class RewardNetworkImpl implements RewardNetwork {
 	@Transactional
 	public RewardConfirmation rewardAccountFor(Dining d) {
 	// atomic unit-of-work
 	}
 }
+
+//Java config
 @Configuration
 @EnableTransactionManagement
 public class TxnConfig {
@@ -376,9 +404,9 @@ public class TxnConfig {
 public PlatformTransactionManager transactionManager(DataSource ds);
 	return new DataSourceTransactionManager(ds);
 }
-//or
+//or annotation config
 <tx:annotation-driven/>
-
+//or xml config
 <bean id=“transactionManager” 
 class=”org.springframework.jdbc.datasource.DataSourceTransactionManager”>
 	<property name=“dataSource” ref=“dataSource”/>
@@ -420,8 +448,8 @@ public RewardConfirmation updateConfirmation(RewardConfirmantion rc) {
  > No code changes Just configuration
  ```xml
 <!--local-->
-<bean id="transactionManager" class="...DataSourceTransactionManager"\> ...
-<jdbc:embedded-database id="dataSource"\> ...
+<bean id="transactionManager" class="...DataSourceTransactionManager"> ...
+<jdbc:embedded-database id="dataSource"> ...
 <!--global-->
 <tx:jta-transaction-manager/> 
 <jee:jndi-lookup id=“dataSource” ... />
@@ -444,19 +472,18 @@ public class RewardNetworkImpl implements RewardNetwork {
 - dirty reads : see the results of an uncommited unit of work
 - non-repeatable reads : a row is read twice in the same transaction, results are different
 - phantom reads: All the rows in the query have the same value before and after, but for the same query different result is queried i.e. different rows are selected. cus the transaction is not concurrent.
-ropagation
+## Propagation
 >ClientServiceImpl calls AccountServiceImpl, both of them are transactional?
 Should everything run into a single transaction? – Should each service have its own transaction?
 
-- 7 levels of p## Transaction Propagation
+- 7 levels of Transaction Propagation
 ```java
 @Transactional( propagation=Propagation.REQUIRES_NEW )
 ```
-| Propagation | there is a current tx |there is not a current tx
-|--meaning |
-|--|--|
-|REQUIRED|  Execute within a current transaction(**use the existing one**)|, create a new one if none exists|
-|REQUIRES_NEW |**always Create a new transaction**, suspending the current transaction if one exists|**always Create a new transaction**,
+| Propagation | there is a current tx |there is not a current tx |
+|--|--|--|
+|REQUIRED|  Execute within a current transaction(**use the existing one**)| create a new one|
+|REQUIRES_NEW |**always Create a new transaction**, suspending the current transaction|**always Create a new transaction**
 |MANDATORY|use current one|exception
 |NEVER|exception|run method out of any txn
 |NOT_SUPPORTED|suspend current, run outside|run outside
@@ -561,5 +588,4 @@ public void testRewardAccountFor() { … }
 @Transactional //default transactionManager
 ```
 
-### Propagation Options
 
