@@ -478,5 +478,178 @@ variable properties are private, use public method to access it, and behavior lo
 ### Inner Class
 can be static, inside of  a class, or inside of a method.
 
+# MISCELLANEOUS
+## platform
+### Java is platform independent
+**.java** 
+-source code is compiled-> (by **javac**)
+**.class(JAR files)** 
+-bytecode is converted to executable instructions (by **JVM** for each OS)
+executable instruction -running on -> different OS 
 
+### JDK vs. JRE vs. JVM
+**JDK** : javac (compiler), jar, debugging tools (debuggers), javap
+contains
+**JRE** : java (run bytecode), javaw, libs, rt.jar
+contains
+**JVM** : Just In Time (JIT) Compiler (run bytecode)
 
+### classloader --JVM uses classloader to find 
+system class loader -- classes from CLASSPATH (jar /war /ear)
+->
+extension class loader -- classes from extension dir (jre /ext /lib)
+->
+bootsrap class loader -- java core files (pre-packaged with Java)
+->
+ClassNotFoundException
+
+## wrapper classes
+>null, Collection, methods, String -> Integer/Float/Boolean
+### ways of creating Wrapper Class Instances
+```java
+Integer number = new Integer(55);//Integer("55");
+Boolean b4 = new Boolean("SomeString"); // b4 is false
+//static method valueOf(arg);
+Integer seven = Integer.valueOf("111", 2); //binery 111 to Integer -> 7
+Integer hundred = Integer.valueOf("100"); //Integer -> 100
+```
+## String
+### String vs. StringBuffer vs. StringBuilder
+| String | StringBuffer |StringBuilder
+|--|--|--
+| tread safe | tread safe |not thread safe
+|cannot be modified|modifiable|modifiable
+|worst|not as good as StringBuilder|performs better
+`new StringBuffer("str1").append("str2");`
+
+### String methods
+```java
+str.charAt(2);// the 2 index, starting from 0
+str.substring(3); //sub string, starting from index 3
+str.substring(3,7);//sub string, starting from index 3 end at 6
+str.length();
+str.toString();
+str.equalsIgnoreCase("Abc");
+"ac;bd;ef;d".split(";");
+```
+## Modifiers
+|default|public |private|protected
+|--|--|--|--
+|package|out-of-parckage|class|package & super is available to sub
+
+### final
+- class cannot be extended
+- methods cannot be overriden
+- variable values cannot be changed 
+- method argument cannot be modified
+
+### volatile
+contance variables values are written/read from main memory and not cached in Java Thread cache.
+
+### conditions & loops
+if... else...
+switch(var) {case var_value: ...; default: ...;}
+for( int i: num){...}
+
+### try with resources
+- try block ends and resources are released 
+- no finally block
+- try block includes instance of a class which implements AutoCloseable interface
+
+### Arrays
+- comparing 2 arrays
+```java
+Arrays.equals(numbers1, numbers2);
+```
+### Enum
+specifies a list of values for a type
+```java
+enum Season {
+WINTER, SPRING, SUMMER, FALL
+};
+```
+### Variable Arguments
+- Variable Arguments allow calling a method with different number of parameters
+```java
+public int sum(int... numbers) { ...
+```
+### Assertions
+> validate an assumpution in assert(), if fails return false, not used on public methods
+> public method uses IllegalArgumentException
+```java
+private int computerSimpleInterest(int principal,float interest,int years){ assert(principal>0);
+return 100;
+}
+```
+### GC
+memory management manages **heap** for a program, JVM remove objects on the heap when there are not referencs to the objects .
+- when cpu is free, or memory on heap is low
+- GC is requested when calling `System.gc()`
+
+### Initialization blocks
+static blocks : when classes are loaded
+`static {...}`
+instance initilization: whenever a new object is created,  it runs
+`class Ex{ 
+	int i{ ...}
+}`
+### Serialization
+- serialization : convert object state to some internal object representation
+- de-serialization : convert internal object representation to object 
+```java
+ObjectOutputStream.writeObject() // serialize and write to file
+ObjectOutputStream.readObject() // read from file and deserialize
+
+//write object of Ex into file Rectangle.ser
+class Ex implements Serializable {}
+FileOutputStream fileStream = new FileOutputStream("Rectangle.ser"); ObjectOutputStream objectStream = new ObjectOutputStream(fileStream); objectStream.writeObject(new Rectangle(5, 6));
+objectStream.close();
+
+//deserialize and read object from file Rectangle.ser
+FileInputStream fileInputStream = new FileInputStream("Rectangle.ser"); ObjectInputStream objectInputStream = new ObjectInputStream(
+fileInputStream);
+Rectangle rectangle = (Rectangle) objectInputStream.readObject(); objectInputStream.close(); System.out.println(rectangle.length);// 5 
+System.out.println(rectangle.breadth);// 6 
+System.out.println(rectangle.area);// 30
+```
+- transient properties are not serialized `transient int area;`
+-  classes as a type of properties inside of a serialized class 
+```java
+class House implements Serializable {
+	transient Wall wall;
+	int number; 
+}
+class Wall implements Serializable { 
+	int length;
+}
+```
+- static variable are not part of the object, hence not serialized.
+
+# Thread
+## ways to create a thread
+```java
+class MyThread1 extends Thread{
+	public void run() {}
+}
+new MyThread1().start();
+
+class MyThread2 implements Runnable{
+	public void run() {}
+}
+new Thread(new MyThread2()).start();
+```
+## ExecutorService
+similar to a thread pool.
+```java
+ExecutorService executorService = Executors.newSingleThreadExecutor();
+executorService.execute(new Runnable() { public void run() {
+	System.out.println("From ExecutorService");
+} });
+System.out.println("End of Main"); executorService.shutdown();
+//return
+Future futureFromCallable = executorService1.submit(new Callable() { 	   		public String call() throws Exception {
+	return "RESULT";
+} });
+System.out.println("futureFromCallable.get() = " + futureFromCallable.get());
+
+```
