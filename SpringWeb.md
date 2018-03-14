@@ -2,17 +2,108 @@
 ## web application architecture
 >Internal mechanism:
 >
+**clients** --remote http interfaces--> 
+{[**web layer** --localJava business interfaces-->
+ **application layer (Spring)**
+ ]*Java EE servlet container*
+ }*JVM*
+ 
+
+
+----------
+
+
 ![web application architecture](https://user-images.githubusercontent.com/32177380/36849383-eea4fac0-1d31-11e8-9f96-9ef2be9e2214.png)
 >
 ![servlet container after starting up](https://user-images.githubusercontent.com/32177380/36849592-7093cf48-1d32-11e8-8873-d814d87d9b28.png)
 -   Spring can be used with any web framework  
- - Spring internally provides the **ContextLoaderListener** (load application context)
+ - Spring internally provides the **ContextLoaderListener** (load a>
+![servlet and config](https://user-images.githubusercontent.com/32177380/36850097-cf73f884-1d33-11e8-9ff6-a12501816dbf.png)
+## Spring Web Application Context
+> ApplicationContext initialization
+> servlet
+> - gets Spring ApplicationContext from ServletContext
+```java
+public class TopSpendersReportGenerator extends HttpServlet{ 
+	private ClientService clientService;
+
+	public void init() {  
+	ApplicationContext context)
  - and **DispatcherServlet**  (load web layer context, plug in *mvcConfig.class*(ReviewResolver) which calls *appConfig.class* )
  - that can be declared in **web.xml**
  -   Spring MVC is a lightweight web framework where controllers are Spring beans. 
 - Spring implements  
 >
-![servlet and config](https://user-images.githubusercontent.com/32177380/36850097-cf73f884-1d33-11e8-9ff6-a12501816dbf.png)
+![servlet and config](https://user-images.githubuser = WebApplicationContextUtils.
+
+	getRequiredWebApplicationContext(getServletContext()); clientService = (ClientService) context.getBean(“clientService”);
+
+	}
+
+... 
+}
+```
+> application ready
+> - DI in controller 
+```java
+@Controller  
+public  class  TopSpendersReportController  {
+	private  ClientService  clientService;
+	@Autowired  
+	public  TopSpendersReportController(ClientService  service)  {
+
+	this.clientService  =  service;
+}
+```
+> ApplicationContext.close();
+### configuration
+>Java
+
+    AbstractContextLoaderInitializer{
+	    new AnnotationConfigWebApplicationContext()
+	    .getEnvironment()
+	    .register(Config.class);
+    }
+
+```java
+public class MyWebAppInitializer  
+extends AbstractContextLoaderInitializer {
+
+@Override
+
+protected WebApplicationContext createRootApplicationContext() {
+
+// Create the 'root' Spring application context
+
+AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+
+rootContext.getEnvironment().setActiveProfiles("jpa"); // optional rootContext.register(RootConfig.class);  
+return rootContext;
+
+} 
+
+//define servlet
+public void onStartup(ServletContext container) { super.onStartup(container);  
+// Register and map a servlet 
+ServletRegistration.Dynamic svlt = container.addServlet("myServlet", new TopSpendersReportGenerator()); svlt.setLoadOnStartup(1);  
+svlt.addMapping("/");
+
+}
+```
+>XML
+```xml
+<context-param> <param-name>contextConfigLocation</param-name> <param-value>
+
+/WEB-INF/merchant-reporting-webapp-config.xml
+
+</param-value> </context-param>
+
+<listener> <listener-class>
+
+org.springframework.web.contenxt.com/32177380/36850097-cf73f884-1d33-11e8-9ff6-a12501816dbf.png)ContextLoaderListener
+
+</listener-class> </listener>
+```
 
 ## Spring Web includes:
 MVC, WebFlow, Mobile, Social
@@ -20,18 +111,23 @@ MVC, WebFlow, Mobile, Social
 ## Spring Web MVC
 ### MVC
 a web framework based on Model View Controller pattern
+> - alternative of JSF, struts etc
 > - POJO, testable, Spring configuration
 > - support view techs of JSP, XSLT, PDF, Excel, Velocity, Freemarker, Thymeleaf etc.
 ### request processing lifecycle
->client --request **URL** -->*Dispatcher Servlet* --dispatch request--> **controller**-->**model** contains data , **logic view**(for instance, a String) is returned-->*dispatcher servlet* --consults> **view resolver** -->return view --> *dispatcher servlet* --render model--> **view** -->responde --> *dispatcher servlet*-->client
+>client --request **URL** -->*Dispatcher Servlet* --dispatch request--> **controller**
+>-->**model** contains data , **logic view**(for instance, a String) is returned(logic view)-->*dispatcher servlet* --consults> **view resolver** --
+>return view --> *dispatcher servlet* --render model--> **view** --
+>responde --> *dispatcher servlet*-->client
 ![enter image description here](https://user-images.githubusercontent.com/32177380/36821929-73190dec-1cc3-11e8-972a-8415a8e8a8ea.png)
 ### Key Artifacts
 #### About DispatcherServlet
 >-   coordinates all **request** handling activities
 >-   **Delegates to** / invokes Web infrastructure beans
->-   **interfaces** for all infrastructure beans
->-   Servlet calls WebApplicationInitializer or web.xml
-cus Beans defined in MVC Context have access to beans defined in Root Context
+>-   **Invokes user Web components
+>-   interfaces** for all infrastructure beans
+>-   Sservlet callsusing WebApplicationInitializer or web.xml
+cus- Beans defined in MVC Context have access to beans defined in Root Context
 ```java
 public class MyWebInitializer  
 extends AbstractAnnotationConfigDispatcherServletInitializer {
@@ -39,11 +135,13 @@ extends AbstractAnnotationConfigDispatcherServletInitializer {
 // Tell Spring what to use for the Root context:  
 @Override 
 protected Class<?>[] getRootConfigClasses() {
-	return new Class<?>[]{ RootConfig.class }; }
+	
+return new Class<?>[]{ RootConfig.class }; }
 
 // Tell Spring what to use for the DispatcherServlet context: @Override 
 protected Class<?>[] getServletConfigClasses() {
-	return new Class<?>[]{ MvcConfig.class }; }
+	
+return new Class<?>[]{ MvcConfig.class }; }
 
 // DispatcherServlet mapping:
 
@@ -52,15 +150,27 @@ protected Class<?>[] getServletConfigClasses() {
 
 }
 ```
+| servlet container  | what's in it|
+|--|--|
+| ServletContainerInitializer |interface from servlet3 to initialize servlet|
+| SpringServletContainerInitializer|Spring's implementation|
 
+| servlet config  | what's in it |
+|--|--|
+|WebApplicationInitializer|servlet config/web.xml|
+| AbstractContextLoaderInitializer| ContextLoaderListener& app root context|
+|AbstractAnnotationConfigDispatcherServletInitializer| dispatcherServlet & root config and mapping|
+> beans defined in web context have access to  beans defined in RootApplicationContext
 #### Controllers
 - controller impl
 ```java
 @Controller
+
 public class AccountController {
 
 	@RequestMapping("/listAccounts")
-	public String list(Model model) {...} 
+	
+public String list(Model model) {...} 
 }
 ```
 - Controller Method Parameters
@@ -96,8 +206,8 @@ HttpSession session
 - DispatcherServlet delegates to **ViewResolvers** that select **View** based on **view name**
 
 #### View Resolvers
-- to override the default, register a ViewResolver bean with DispatchServlet in MvcConfig.class using InternalResourceViewResolver and setPrefix, setSuffix
-- by default, **JSP**: */WEB-INF/views/list.jsp* would be a view named "*list.jsp*"
+- to override the default, registerdefine a ViewResolver bean within DispatcherServlet in MvcConfig.class using InternalResourceViewResolver and setPrefix, setSuffix
+- by default, **JSP**: */WEB-INF/viewsreward/list.jsp* would be athe view of named "*list.jsp*"
 
 ![view resolver define](https://user-images.githubusercontent.com/32177380/36853241-f110c820-1d3b-11e8-93b2-8c33cafd0156.png)
 
@@ -112,16 +222,17 @@ Steps:
 repeat steps 2-6 to develop new functionality
 >
 >**Deploy a DispatcherServlet**
->initialize the DispatcherServlet through WebInitializer
+>initialize the DispatcherServlet through WebInitializer/DispatcherServletInitializer
 ```java
 class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer{
 getRootConfigClasses();//Spring App config(services, repositories etc)
 getServletConfigClasses();//Spring MVC configs
-getServletMappings();
+getServletMappings();//DispatcherServlet mapping
 ...
 }
 ```
 >**initial Spring MVC config**
+>DisatcherServlet 
 ```java
 @Configuration  
 public class MvcConfig {
@@ -138,23 +249,30 @@ public class MvcConfig {
 >**Implement a Controller**
 ```java
 @Controller
+
 public class RewardController {  
 	private RewardLookupService lookupService;
 
 	@Autowired
-	public RewardController(RewardLookupService svc){ this.lookupService = svc;
-	}
+	
+public RewardController(RewardLookupService svc) { this.lookupService = svc;
+	
+}
 
 	@RequestMapping("/reward/show")  
-	public String show(@RequestParam("id") long id, Model model) {  
+	public String show(@RequestParam("id") long id, 
+
+Model model) {  
 		Reward reward = lookupService.lookupReward(id);
-		model.addAttribute(“reward”, reward);
-		return “rewardView”; }
+		
+model.addAttribute(“reward”, reward);
+		
+return “rewardView”; }
 	}
 }
 ```
 >**Register the Controller with the DispatcherServlet**
->by **ComponentScan** 
+>by **ComponentScan** in this case
 ```java
 @Configuration
 @ComponentScan("accounts.web") 
@@ -209,12 +327,41 @@ public class MvcConfig {
     Account Number = 123456789 Merchant Number = 1234567890
 ## Summary
 -   Spring MVC is Spring's web framework  
-	  -  @Controller classes handle HTTP requests 
-	  -  URL information available
+	
+----
+```java
+public class MyWebAppInitializer implements WebApplicationInitializer {
+
+    @Override
+    public void onStartup(ServletContext container) {
+      // Create the 'root' Spring application context
+    -  @Controller classes handle HTTP requests 
+	AnnotationConfigWebApplicationContext rootContext =
+        new AnnotationConfigWebApplicationContext();
+      rootContext.register(AppConfig.class);
+
+    -  URL information available
 	     - @RequestParam, @PathVariable 
 	 -  Data returned via the Model  
     - Output (HTML) generated by Views
     
 -   Multiple View technologies supported  
-    - ViewResolvers define where Views can be found
+    - ViewResolvers define where Views can be found// Manage the lifecycle of the root application context
+      container.addListener(new ContextLoaderListener(rootContext));
+
+      // Create the dispatcher servlet's Spring application context
+      AnnotationConfigWebApplicationContext dispatcherContext =
+        new AnnotationConfigWebApplicationContext();
+      dispatcherContext.register(DispatcherConfig.class);
+
+      // Register and map the dispatcher servlet
+      ServletRegistration.Dynamic dispatcher =
+        container.addServlet("dispatcher", new DispatcherServlet(dispatcherContext));
+      dispatcher.setLoadOnStartup(1);
+      dispatcher.addMapping("/");
+    }
+
+ }
+```
+
 
