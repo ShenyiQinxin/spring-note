@@ -55,23 +55,18 @@ service.transfer(new MonetaryAmount(“300.00”), “1”, “2”);
 i.e. Instantiating Within a System (Integration) Test
 ```java
 //Bootstraps the system to test the system
-public  class  TransferServiceTests  { private  TransferService  service;
+public  class  TransferServiceTests  { 
+	private  TransferService  service;
 
 @Before  public  void  setUp()  {  
 //  Create  the  application  from  the  configuration 
-ApplicationContext  context  =
-
-SpringApplication.run(  ApplicationConfig.class  ) 
+ApplicationContext  context  = SpringApplication.run(  ApplicationConfig.class  ) 
 //  Look  up  the  application  service  interface  
 service  =  context.getBean(TransferService.class);
-
 }
 
-
 @Test  public  void  moneyTransfer()  { 
-Confirmation  receipt  =
-
-service.transfer(new  MonetaryAmount("300.00"),  "1",  "2")); 
+Confirmation  receipt  = service.transfer(new  MonetaryAmount("300.00"),  "1",  "2")); 
 Assert.assertEquals("500.00",  receipt.getNewBalance());
 
 }
@@ -81,12 +76,10 @@ Assert.assertEquals("500.00",  receipt.getNewBalance());
 ```java
 @Configuration  
 @Import({InfrastructureConfig.class,  WebConfig.class  }) 
-public  class  ApplicationConfig  {
-... }
+public  class  ApplicationConfig  {... }
 
 @Configuration  
-public  class  InfrastructureConfig  {
-... }
+public  class  InfrastructureConfig  {... }
 ```
 >It is not illegal to define the same bean more than once – You get the last bean Spring sees defined
 ## Bean scope
@@ -95,8 +88,7 @@ public  class  InfrastructureConfig  {
 @Bean  
 @Scope(“singleton”)  
 public AccountService accountService() {
-
-return ...
+	return ...
 ```
 - prototype : New instance created every time bean is referenced
 - session : A new instance is created once per user session - web environment only
@@ -104,7 +96,7 @@ return ...
 
 ## Dependency Injection Summary
 
--   Your object is handed what it needs to work  
+-   Your object is working for what it needs to   
     – Frees it from the burden of resolving its dependencies – Simplifies your code, improves code reusability
     
 -   Promotes programming to interfaces  
@@ -113,46 +105,45 @@ return ...
 -   Improves testability  
     – Dependencies easily stubbed out for unit testing
     
--   Allows for centralized control over object lifecycle – Opens the door for new possibilities
+-   Allows for centralized control over object lifecycle 
 
 ## Setting property values
 -   **Environment** object used to obtain properties from runtime environment
-	-   Properties from many sources: 
-	– JVM System Properties  
-    – Java Properties Files  
-    – Servlet Context Parameters
-    – System Environment Variables 
-    – JNDI
+	-  Properties from many sources: 
+		– JVM System Properties  : `System.properties();`
+	    – Java Properties Files  : `.properties`
+	    – Servlet Context Parameters : `web.xml/ServletApp.config`
+	    – System Environment Variables : `OS`
+	    – JNDI
+	    
 ```java
 @Configuration  
-public  class  DbConfig  {
-//property names
-private  static  final  String  DB_DRIVER  =  "db.driver"; 
-private  static  final  String  DB_URL  =  "db.url"; 
-private  static  final  String  DB_USER  =  "db.user"; 
-private  static  final  String  DB_PWD  =  "db.password";
-
-@Autowired  public  Environment  env;
-
-@Bean  public  DataSource  dataSource()  {  
-DataSource  ds  =  new  BasicDataSource(); 
-//Fetch property values from environment variables
-ds.setDriverClassName(  env.getProperty(  DB_DRIVER  )); 
-ds.setUrl(  env.getProperty(  DB_URL  ));  
-ds.setUser(  env.getProperty(  DB_USER  )); 
-ds.setPassword(  env.getProperty(  DB_PWD  ));  
-return  ds;
-
-} }
-
-
+public class  DbConfig  {
+	//property names
+	private  static  final  String  DB_DRIVER  =  "db.driver"; 
+	private  static  final  String  DB_URL  =  "db.url"; 
+	private  static  final  String  DB_USER  =  "db.user"; 
+	private  static  final  String  DB_PWD  =  "db.password";
+	
+	@Autowired  public  Environment  env;
+	
+	@Bean public DataSource dataSource()  {  
+		DataSource ds = new BasicDataSource(); 
+		//Fetch property values from environment variables
+		ds.setDriverClassName(env.getProperty(  DB_DRIVER  )); 
+		ds.setUrl(  env.getProperty(  DB_URL  ));  
+		ds.setUser(  env.getProperty(  DB_USER  )); 
+		ds.setPassword(  env.getProperty(  DB_PWD  ));  
+		return  ds;
+	} 
+}
 ```
 
 - Property Sources
 	- Environment obtains values from “property sources” 
 	- Environment Variables and Java System Properties always populated automatically  
 	- **@PropertySource** contributes additional properties 
-	- Available resource prefixes: classpath: file: http:
+	- Available resource prefixes: `classpath:  file:  http:`
 ```java
 @Configuration  
 @PropertySource(“classpath:/com/organization/config/app.properties”  ) 
@@ -168,22 +159,22 @@ public class ApplicationConfig  {
 @PropertySource(“classpath:/com/acme/config/app-${ENV}.properties”)  
 public  class  DbConfig  {
 
-@Bean  
-public  DataSource  dataSource(
+	@Bean  
+	public  DataSource  dataSource(){
 
-@Value("${db.driver}")  String  driver, 
-@Value("${db.url}")  String  url, 
-@Value("${db.user}")  String  user, 
-@Value("${db.password}")  String  pwd)  {
+		@Value("${db.driver}")  String  driver, 
+		@Value("${db.url}")  String  url, 
+		@Value("${db.user}")  String  user, 
+		@Value("${db.password}")  String  pwd)  {
 
-DataSource  ds  =  new  BasicDataSource(); 
-ds.setDriverClassName(  driver); 
-ds.setUrl(  url);  
-ds.setUser(  user);
-ds.setPassword(  pwd  ));
+		DataSource  ds  =  new  BasicDataSource(); 
+		ds.setDriverClassName(driver); 
+		ds.setUrl(url);  
+		ds.setUser(user);
+		ds.setPassword(pwd));
 
-return  ds; }
-
+		return  ds; 
+	}
 }
 ```
 - **PropertySourcesPlaceholderConfigurer**
@@ -191,7 +182,7 @@ return  ds; }
 ```java
 @Bean
 public static PropertySourcesPlaceholderConfigurer pspc() { 
-return new PropertySourcesPlaceholderConfigurer();
+	return new PropertySourcesPlaceholderConfigurer();
 
 }
 ```
@@ -220,53 +211,53 @@ System.setProperty("spring.profiles.active", "dev,jpa");
 SpringApplication.run(AppConfig.class);
 ```
 >- Integration Test: Use **@ActiveProfiles** (later section)  
-```java
-System.setProperty("spring.profiles.active", "dev,jpa"); 
-SpringApplication.run(AppConfig.class);
-```
+
 ### Spring Expression Language
 - Using @Value
 ```java
 @Configuration
-
 class TaxConfig {
-//Set an attribute then use it
-**@Value("#{ systemProperties['user.region'] }")** String region;
-@Bean public TaxCalculator taxCalculator1() { 
-return TaxCalculator tc =new TaxCalculator( region );
-
-}
-//Pass as a bean method argument
-@Bean public TaxCalculator taxCalculator2(**@Value("#{ systemProperties['user.region'] }")** String region, ...) {
-return TaxCalculator tc = new TaxCalculator( region ); 
-}
-
+	//Set an attribute then use it
+	@Value("#{ systemProperties['user.region'] }") String region;
+	
+	@Bean public TaxCalculator taxCalculator1() { 
+	return TaxCalculator tc =new TaxCalculator( region );
+	}
+	//Pass as a bean method argument
+	@Bean 
+	public TaxCalculator taxCalculator2(
+	@Value("#{ systemProperties['user.region'] }") String region, ...)					{
+		return TaxCalculator tc = new TaxCalculator( region ); 
+	}
+	
+//Accessing Spring Bean
 @Configuration
 class AnotherConfig {
-@Bean public StrategyBean strategyBean() { return new StrategyBean();}
-//Accessing Spring Bean
-**@Value("#{strategyBean.keyGenerator}")** KeyGenerator kgen;
-
-... }
+	@Bean public StrategyBean strategyBean() { 
+		return new StrategyBean();
+	}
+	//Accessing Spring Bean
+	@Value("#{strategyBean.keyGenerator}") KeyGenerator kgen;
+... 
+}
 
 class StrategyBean {
-private KeyGenerator gen = new KeyGenerator.getInstance("Blowfish"); 
-public KeyGenerator getKeyGenerator() { return gen; }}
+	private KeyGenerator gen = new KeyGenerator.getInstance("Blowfish"); 
+	public KeyGenerator getKeyGenerator() { return gen; }
+}
 ```
 - Accessing Properties
 ```java
 @Value("${daily.limit}") int  maxTransfersPerDay;
 //the same with
 @Value("#{environment['daily.limit']}") int  maxTransfersPerDay;
-@Value("#{new  Integer(environment['daily.limit'])  *  2}") 
-@Value("#{new  java.net.URL(environment['home.page']).host}")
+@Value("#{new Integer(environment['daily.limit'])  *  2}") 
+@Value("#{new java.net.URL(environment['home.page']).host}")
 ```
 -   EL Attributes can be:  
     – Spring beans (like strategyBean) – Implicit references
-    
     -   Spring's environment, systemProperties, systemEnvironment available by default
-        
-    -   Others depending on context
+     -   Others depending on context
         
 -   SpEL allows to create custom functions and references
     
@@ -280,11 +271,12 @@ public KeyGenerator getKeyGenerator() { return gen; }}
 ```java 
 @Configuration
 public class AppConfig {  
-@Bean public AccountRepository accountRepository() { ... } @Bean public TransferService transferService() { ... }
+@Bean public AccountRepository accountRepository() { ... } 
+@Bean public TransferService transferService() { ... }
 }
 //inheritance based proxy
-public  class  AppConfig$$EnhancerByCGLIB$  extends  AppConfig  { public  AccountRepository  accountRepository()  {  //  ...  }  
-public  TransferService  transferService()  {  //  ...  }
+	public  class  AppConfig$$EnhancerByCGLIB$  extends  AppConfig  { public  AccountRepository  accountRepository()  {  //  ...  }  
+	public  TransferService  transferService()  {  //  ...  }
 
 }
 ```
@@ -299,38 +291,32 @@ public  TransferService  transferService()  {  //  ...  }
 >@Autowired(required=false) Only inject if dependency exists
 ```java
 @Autowired
-
 Optional<AccountService> accountService;
-
-public void doSomething() { accountService.ifPresent( s -> {
-
-// s is the AccountService instance,
-
-// use s to do something
-
+public void doSomething() { 
+	accountService.ifPresent( s -> {
+	// s is the AccountService instance,
+	// use s to do something
 }); }
 ```
 >Constructor-injection
 ```java
 @Autowired  
 public  TransferServiceImpl(AccountRepository  a)  {
-this.accountRepository  =  a; }
+	this.accountRepository  =  a; }
 
 @Autowired  
 public  TransferServiceImpl(@Value("${daily.limit}")  int  max)  {
-
-this.maxTransfersPerDay  =  max; }
+	this.maxTransfersPerDay  =  max; }
 ```
 > setter injection
 ```java
 @Autowired  
 public  void  setAccountRepository(AccountRepository  a)  {
-this.accountRepository  =  a; }
+	this.accountRepository  =  a; }
 
 @Autowired  
 public  void  setDailyLimit(@Value("${daily.limit: 100000}}")  int  max)  {
-
-this.maxTransfersPerDay  =  max; }
+	this.maxTransfersPerDay  =  max; }
 ```
 > field injection
 ```java
@@ -344,13 +330,15 @@ private  AccountRepository  accountRepository;
 ```java
 @Component  //bean id is transferServiceImpl
 public class TransferServiceImpl implements TransferService  {
-@Autowired  
-public  TransferServiceImpl(AccountRepository  repo)  {
-this.accountRepository  =  repo; }
+	@Autowired  
+	public  TransferServiceImpl(AccountRepository  repo)  {
+		this.accountRepository  =  repo; 
+	}
 }
 
 @Configuration
-@ComponentScan(“com.bank”) //Find @Component classes within designated (sub)packages
+@ComponentScan(“com.bank”) 
+//Find @Component classes within designated (sub)packages
 public  class  AnnotationConfig  {
 //  No  bean  definition  needed  any  more }
 ```
@@ -358,23 +346,25 @@ public  class  AnnotationConfig  {
 |--|--|
 | Mandatory dependencies | Optional / changeable dependencies |
 |Immutable dependencies|Circular dependencies|
-|pass several params at once|Inherited automatically|
- - @Qualifier("jdbcAccountRepository")
+|pass several params at once|*Inherited automatically|
+
+ - `@Qualifier("jdbcAccountRepository")`
  >when 2 beans are defined by the same interface TransferService but differnt beanId, we use **@Qualifier("beanId")** to specify which bean to call.
- ```java
- @Component("transferService")  
+ 
+```java
+@Component("transferService")  
 public  class  TransferServiceImpl  implements  TransferService  {
 
-@Autowired  
-public  TransferServiceImpl(  @Qualifier("jdbcAccountRepository")
+	@Autowired  
+	public TransferServiceImpl(
+	@Qualifier("jdbcAccountRepository") AccountRepository  accountRepository)  {  ...  }
 
-AccountRepository  accountRepository)  {  ...  }
+	@Component("jdbcAccountRepository")  
+	public  class  JdbcAccountRepository  implements  AccountRepository  {...}
 
-@Component("jdbcAccountRepository")  
-public  class  JdbcAccountRepository  implements  AccountRepository  {..}
-
-@Component("jpaAccountRepository")  
-public  class  JpaAccountRepository  implements  AccountRepository  {..}
+	@Component("jpaAccountRepository")  
+	public  class  JpaAccountRepository  implements  AccountRepository  {...}
+}
  ```
 
 - Component Names
@@ -382,7 +372,7 @@ public  class  JpaAccountRepository  implements  AccountRepository  {..}
 	-   When not specified  
     – Names are auto-generated
     
-    • De-capitalized non-qualified classname by default `MyService -> myService`
+    • De-capitalized non-qualified **classname** by default `MyService -> myService`
     
     • But will pick up implementation details from classname – Recommendation: never rely on generated names!
     
@@ -402,8 +392,8 @@ public  class  TransferConfiguration
 
 	@Bean(name="transferService") 
 	@Scope("prototype") @Profile("dev")  @Lazy(false)
-	public  TransferService  tsvc()  { return
-	new  TransferServiceImpl( accountRepository());
+	public  TransferService  tsvc()  { 
+	return new  TransferServiceImpl( accountRepository());
 }
 ```
 | Annotation |Java Config  |
@@ -417,8 +407,8 @@ public  class  TransferConfiguration
     
     • Your classes  
     – But still use Java Configuration for
-    
-    • Third-party beans that aren't annotated • Legacy code that can't be changed
+      -  Third-party beans that aren't annotated 
+      -  Legacy code that can't be changed
 ## @PostConstruct and @PreDestroy 
 >method can have any visibility, must take no parameters, must return void
 >Add behavior at startup and shutdown
@@ -427,25 +417,24 @@ public  class JdbcAccountRepository {
 private  DataSource  dataSource;
 
 @Autowired  
-public  void  setDataSource(DataSource  dataSource)
-
-{  this.dataSource  =  dataSource;  }
+public  void  setDataSource(DataSource  dataSource){  
+	this.dataSource  =  dataSource;  }
 //Method called at startup **after dependency all injection** 
 //Called after setter methods are called
-@PostConstructvoid  populateCache()  {  }
+	@PostConstructvoid  populateCache()  {  }
 //Method called at shutdown **prior to destroying the bean instance**
 //Called when a ConfigurableApplicationContext is closed – If application (JVM) exits normally  
 //– Useful for releasing resources & 'cleaning up'  
 //– Not called for prototype beans
-@PreDestroy  
-void  clearCache()  {  }
+	@PreDestroy  
+	void  clearCache()  {  }
 }
 //Causes Spring to invoke @PreDestroy  method
 ConfigurableApplicationContext context = SpringApplication.run(...); // Triggers call of all @PreDestroy annotated methods context.close();
 ```
 -   Beans are created in the usual ways:  
     – Returned from @Bean methods  
-    – Found and created by the component-scanner
+    – Found and created by the **component-scanner**
     
 -   Spring then invokes these methods automatically – During bean-creation process
 - -   Defined by JSR-250, part of Java since Java 6 – Injavax.annotationpackage
@@ -496,7 +485,8 @@ String  value()  default  ""; }
 public  void  setAccountRepository(AccountRepository  repo)  {
 this.accountRepository  =  repo; }
 //field injection
-@Resource(name="jdbcAccountRepository”) private  AccountRepository  accountRepository;
+@Resource(name="jdbcAccountRepository”) 
+private  AccountRepository  accountRepository;
 ```
 ## Standard annotations (JSR 330)
 -   Java Specification Request 330
@@ -509,7 +499,7 @@ this.accountRepository  =  repo; }
 public  class  TransferServiceImpl  implements  TransferService  {
 
 @Inject  
-public  TransferServiceImpl(  @Named("accountRepository")
+public  TransferServiceImpl(@Named("accountRepository")
 
 AccountRepository  accountRepository)  {  ...  } }
 
@@ -517,48 +507,56 @@ AccountRepository  accountRepository)  {  ...  } }
 public  class  JdbcAccountRepository  implements
 AccountRepository  {..}
 ```
-| Spring  |JSR 330  |Comments|
-|--|--|--|
-| @Autowired |@Inject  |@Inject always is required|
+| Spring  |JSR 330  |JSR250|Comments|
+|--|--|--|--|
+| @Autowired |@Inject  |@Resource|@Inject always is required; @Resource finds beans first by name then by type|
 |@Required|@Inject||
-| @Component | @Named |@ComponentScan could find it|
-| @Qualifer | @Named |@Named is by name|
-| @Scope |  @Scope|JSR330 Scope only for meta-annoation|
-| @Scope("Singleton") | @Singleton ||
-|@Value|..|SpEL specific
-|@Lazy||
+| @Component | @Named ||@ComponentScan could find it|
+| @Qualifer | @Named ||@Named is by name|
+| @Scope |  @Scope ||JSR330 Scope only for meta-annoation|
+| @Scope("Singleton") |@Singleton|  ||
+|@Value|..||SpEL specific
+|@Lazy|||
 ### construction & setter injection 
 ```java
 //constructor injection ex:
-@Bean  public  Repository  (id1)repository()  { return  new  (class1)RepositoryImpl();}
+@Bean  public  Repository  (id1)repository()  { 
+	return  new  (class1)RepositoryImpl();}
 
 @Bean  public  Service  (id2)service()  {  
-return  new  (class2)ServiceImpl( (id1) repository() );}
+	return  new  (class2)ServiceImpl( (id1) repository() );}
 
-<bean id2=“service” class2=“com.acme.ServiceImpl”/> 
-<constructor-arg ref=“repository(id1)”/>
+<bean id2=“service” class2=“com.acme.ServiceImpl”> 
+	<constructor-arg ref=“repository(id1)”/>
 </bean>  
 <bean  id1=“repository”  class1=“com.acme.RepositoryImpl”/>
 
 //setter injection ex:
-@Bean  public  Repository  (id1)repository()  { return  new  (class1)RepositoryImpl();}
+@Bean  public  Repository  (id1)repository()  { 
+	return  new  (class1)RepositoryImpl();
+}
 
-@Bean  public  Service  (id2)service()  { Service  svc  =  new  (class2)ServiceImpl(); svc.setRepository( (id1) repository()  ); return  svc;}
+@Bean  public  Service  (id2)service()  { 
+	Service  svc  =  new  (class2)ServiceImpl(); 
+	svc.setRepository( (id1) repository()  ); 
+	return  svc;
+	}
 
-<bean  id2=“service”  class2=“com.acme.ServiceImpl”\> <property(setProperty(id1))  (id1)name=“repository”  (id1)ref=“repository”/>
+<bean  id2=“service”  class2=“com.acme.ServiceImpl”>	
+	<property(setProperty(id1))  (id1)name=“repository”  (id1)ref=“repository”/>
 </bean>  
 <bean  id1=“repository”  class1=“com.acme.RepositoryImpl”/>
 
 //Injecting Scalar Values
 @Bean  
 public  Service  service()  {
-Service  svc  =  new  ServiceImpl(  ); 
-svc.setStringProperty(  “foo”  ); 
-return  svc;
+	Service  svc  =  new  ServiceImpl(  ); 
+	svc.setStringProperty(  “foo”  ); 
+	return  svc;
 }
 
-<bean  id=“service”  class=“com.acme.ServiceImpl”/> 
-<property  name=“stringProperty”  value=“foo”  />
+<bean id=“service” class=“com.acme.ServiceImpl”/> 
+	<property  name=“stringProperty”  value=“foo”  />
 </bean>
 
 //
@@ -573,11 +571,11 @@ return  svc;
 <property  name=“intProperty”  value=“29”  />
 </bean>
 ```
-Spring can convert:
-
-Numeric types BigDecimal,  
-boolean: “true”, “false” Date
-Locale Resource
+>Spring can convert value from string "str":
+	- Numeric types BigDecimal,  
+	- boolean: “true”, “false” 
+	- Date
+	- Locale Resource
 
 ## Creating an ApplicationContext using XML
 ```java
@@ -623,7 +621,8 @@ public AccountService accountService() {return ... }
 public AccountService accountService() {return ... }
 <bean id=“accountService” class=“com.acme.ServiceImpl” lazy-init=“true”> ...</bean>
 
-<beans xmlns=http://www.springframework.org/schema/beans ...\> <bean id="rewardNetwork" ... /> <!-- Available to all profiles --> ...  
+<beans xmlns=http://www.springframework.org/schema/beans ...> 
+<bean id="rewardNetwork" ... /> <!-- Available to all profiles --> ...  
 <beans profile="dev"> ... </beans>  
 <beans profile="prod"> ... </beans>
 </beans>
@@ -631,15 +630,13 @@ public AccountService accountService() {return ... }
 ##   Factory Beans -set conditions for bean definitions in xml config and even Java config
 >-   @Bean methods can use any Java you need to Do property lookups and Use if-then-else and iterative logic
     but No equivalent in XML– We did not implement <if>, <for-each>
->-   Instead Spring XML relies on the Factory Patter to Use a factory to create the bean(s) we want and Use any complex Java code we need in the factory's internal logic
+>-   Instead Spring XML relies on the Factory Pattern to Use a factory to create the bean(s) we want and Use any complex Java code we need in the factory's internal logic
 ```java
 //Note: even Java Configuration may use factory beans
-public  class  AccountServiceFactoryBean implements  FactoryBean  <AccountService>
-
-{  
-public  AccountService  getObject()  throws  Exception  {
-//  Conditional  logic  –  for  example:  selecting  the  right  
-//  implementation  or  sub-class  of  AccountService  to  create return  accountService;
+public  class  AccountServiceFactoryBean implements  FactoryBean  <AccountService>{  
+	public  AccountService  getObject()  throws  Exception  {
+	//  Conditional  logic  –  for  example:  selecting  the  right  
+	//  implementation  or  sub-class  of  AccountService  to  create return  accountService;
 }  
 public  boolean  isSingleton()  {  return  true;  }
 
@@ -685,7 +682,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
 
 http://www.springframework.org/schema/beans
 
-http://www.springframework.org/schema/beans/spring-beans.xsd\> <!\-\- ... -->
+http://www.springframework.org/schema/beans/spring-beans.xsd> <!\-\- ... -->
 
 </beans>
 ```
@@ -713,7 +710,8 @@ http://www.springframework.org/schema/beans/spring-beans.xsd\> <!\-\- ... -->
     • Inner Beans  
     • p and c namespaces
     
-    • Using collections as Spring beans
+    • Using collections as Spring beans```
+
 ## Summary
 -   Spring beans can be defined:  
 -     – Explicitly using @Bean methods  
@@ -777,8 +775,10 @@ ApplicationContext context = // get it from somewhere // Lookup the entry point 
 
 service.transfer(new MonetaryAmount(“50.00”), “1”, “2”);
 
-//Proxy classes are created in the init phase by dedicated BeanPostProcessors
-{SpringProxy(Spring TransactionInterceptor) [target(TransferServiceImpl)]}
+//Proxy classes are created in the init phase by dedicated
+// BeanPostProcessors
+{SpringProxy(Spring TransactionInterceptor) 
+[target(TransferServiceImpl)]}
 A BeanPostProcessor may wrap your beans in a dynamic proxy– adds behavior to your bean transparently
 ```
 | JDK Proxy(dynamic proxies) | CGLib Proxy |
