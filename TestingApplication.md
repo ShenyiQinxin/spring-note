@@ -29,10 +29,11 @@
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=SystemTestConfig.class)
-//?@SpringBootTest in SpringBoot
+//@SpringBootTest in SpringBoot - a simpler version of 
+//@SpringApplicationConfiguration(class=TransferApplication.class) 
 public  final class  TransferServiceTests  { 
-@Autowired  
-private TransferService transferService;
+	@Autowired  
+	private TransferService transferService;
 
 	@Test  
 	public  void  shouldTransferMoneySuccessfully()  {
@@ -56,8 +57,8 @@ public  finall class  TransferServiceTests  {
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=SystemTestConfig.class)
-@TestPropertySource(properties  =  {  "username=foo",  "password=bar"  } locations  =  "cllasspath:/transfer-test.propertiies")
-public  ?final? class  TransferServiceTests  { ...}
+@TestPropertySource(properties  =  { "username=foo",  "password=bar" } locations  =  "cllasspath:/transfer-test.propertiies")
+public final class TransferServiceTests  { ...}
 ```
 ## Testing with Profiles
 -   @ActiveProfiles inside the test class  
@@ -108,12 +109,13 @@ public class JdbcAccountRepository { ...}
     – Use the @Sql annotation:
  ```java
 @RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration(...)  
-?@Sql({“/testfiles/schema.sql”, “/testfiles/general-data.sql”  }  )
+@Sql({“/testfiles/schema.sql”, 
+“/testfiles/general-data.sql”  }  )
 public  final class  MainTests  {
 
 @Test  
 @Sql
-?//Run script named (by default) MainTests.success.sql in same package
+//Run script named (by default) MainTests.success.sql in same package
 public  void  success()  {  ...  }
 
 @Test  
@@ -140,7 +142,8 @@ import  static  org.mockito.Mockito.*;
 
 public class AuthenticatorImplTests  {  
 //  Create  a  mock  object private
-private  AccountRepository  accountRepository=  mock(  AccountRepository.class  );   
+private  AccountRepository  accountRepository=  
+mock(AccountRepository.class);   
  
 //  Inject  the  mock  object
 AuthenticatorImpl  authenticator=  new  AuthenticatorImpl(accountRepository);  
