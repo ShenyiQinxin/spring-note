@@ -9,7 +9,7 @@
 
 ## HelloWorld Example
 - **pom.xml** -- setup Spring boot dependencies
-	- in **parent POM** : `spring-boot-starter-parent` & version i.e. `1.3.0.RELEASE`
+	- in **parent POM**pom : `spring-boot-starter-parent` & version i.e. `1.3.0.RELEASE`
 	- **starter POMs** the recommended dependencies : 
 	`spring-boot-starter-<module>`
 	```
@@ -25,10 +25,11 @@
 - hello.jsp --**View** 
 - Application class -- **Application** launcher
 ```java
-**@SpringBootApplication**
+@SpringBootApplication
 public class Application {
-public static void main(String[] args) { 
-SpringApplication.run(Application.class, args);
+	
+	public static void main(String[] args) { 
+	SpringApplication.run(Application.class, args);
 
 }
 ```
@@ -103,16 +104,17 @@ public static void main(String[] args) {
 ```
 ### explicitly run Spring Boot app inside a Servlet container
 -  Change artifact type to WAR (instead of JAR) 
-- extends SpringBootServletInitializer 
+- Extends SpringBootServletInitializer 
 ```java 
 @SpringBootApplication
 public class Application extends SpringBootServletInitializer{
-protected SpringApplicationBuilder configure( SpringApplicationBuilder application){
+protected SpringApplicationBuilder configure( SpringApplicationBuilder application) {
 	return application.sources(Application.class); 
 }
 
 public static void main(String[] args) { 
 	SpringApplication.run(Application.class, args);
+
 }
 
 }
@@ -122,7 +124,7 @@ public static void main(String[] args) {
 - hybrid WAR file (executed in either Tomcat server or standalone with embedded Tomcat , 2 Tomcat versions must match)
 - .war.original is a traditional WAR file
 - .war is a hybrid WAR file, additionally containing the embedded Tomcat
-- 
+
 ## Other features of Spring Boot
 - **application.properties** is easy to be consumed via **PropertySource, Environment and @Value**
 - configure DataSource bean with `spring-boot-starter-jdbc/jpa`
@@ -164,7 +166,8 @@ i.e. `@Profile` is a special case of `@Conditional`
 @Bean  
 @ConditionalOnBean(name={"dataSource"})  
 public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-	return new JdbcTemplate(dataSource); 
+	
+return new JdbcTemplate(dataSource); 
 }
 @ConditionalOnBean(type={DataSource.class})
 @ConditionalOnClass
@@ -212,7 +215,7 @@ server.servlet-path=/admin
 	i.e. Your `DataSource` stops Spring Boot creating a default `DataSource`, bean type matters.
 -  3. Explicitly disable some auto-configuration  
 ```java
-@EnableAutoConfiguration(**exclude**=DataSourceAutoConfiguration.class) 
+@EnableAutoConfiguration(exclude=DataSourceAutoConfiguration.class) 
 public class ApplicationConfiguration {
 
 ... }
@@ -242,7 +245,7 @@ public static void main(String[] args) {
 ```java
 @Configuration
 class AppConfig {
-@Value("${java.home}") String javaInstallDir;  
+	@Value("${java.home}") String javaInstallDir;  
 ...
 
 }
@@ -276,7 +279,8 @@ public class RewardsClientConfiguration {
 
 // Spring initialized this automatically
 @Autowired ConnectionSettings connectionSettings;
-@Bean public RewardClient rewardClient() { return new RewardClient(
+@Bean public RewardClient rewardClient() { 
+return new RewardClient(
 connectionSettings.getHost(),
 connectionSettings.getPort(), ... );
 
@@ -342,22 +346,23 @@ database:
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(class=TransferApplication.class) 
-public final class TransferServiceTests  {
+public  final class  TransferServiceTests  {
 
-@Autowired  
-private TransferService transferService;
+	@Autowired  
+	private TransferService  transferService;
 
-@Test  
-public  void  successfulTransfer()  {
-TransferConfirmation  conf=transferService.transfer(...);
-... }
+	@Test  
+	public void successfulTransfer()  {
+		TransferConfirmation  conf=  transferService.transfer(...);
+	... }
 
 }
 
 //the same configuration class that the application would use, but for testing purpose
 @SpringBootApplication  
 public  class  TransferApplication  {
-	public  static  void  main(String[]  args)  { 									
+	
+public  static  void  main(String[]  args)  { 									
 	   SpringApplication.run(TransferApplication.class,  args);
 
 } }
@@ -369,11 +374,13 @@ public  class  TransferApplication  {
 public  final  class  TransferServiceTests  {
 ...}
 ```
-`@WebAppConfiguration` :
+- `@WebAppConfiguration` :
 - Creates a **WebApplicationContext**  
  - Can test code that uses web features
-	-	**ServletContext**, **Session and Request bean scopes**
--	 Configures the **location of resources**
-		-	**Defaults** to `src/main/webapp  `
+
+	-	**ServletContext**, **, Session and Request bean scopes**
+	-	 Configures the **location of resources**
+	
+	-	**Defaults** to `src/main/webapp  `
 			-	Override using annotation's *value* attribute
 		-	For **classpath** resources use `classpath:prefix`
