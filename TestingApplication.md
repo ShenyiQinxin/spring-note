@@ -29,7 +29,7 @@
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=SystemTestConfig.class)
-//@SpringBootTest in SpringBoot - a simpler version of 
+//?@SpringBootTest in SpringBoot - a simpler version of 
 //@SpringApplicationConfiguration(class=TransferApplication.class) 
 public  final class  TransferServiceTests  { 
 	@Autowired  
@@ -57,8 +57,8 @@ public  finall class  TransferServiceTests  {
 ```java
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=SystemTestConfig.class)
-@TestPropertySource(properties  =  { "username=foo",  "password=bar" } locations  =  "cllasspath:/transfer-test.propertiies")
-public final class TransferServiceTests  { ...}
+@TestPropertySource(properties  =  {  "username=foo",  "password=bar"  } locations  =  "cllasspath:/transfer-test.propertiies")
+public  ?final? class  TransferServiceTests  { ...}
 ```
 ## Testing with Profiles
 -   @ActiveProfiles inside the test class  
@@ -109,13 +109,13 @@ public class JdbcAccountRepository { ...}
     – Use the @Sql annotation:
  ```java
 @RunWith(SpringJUnit4ClassRunner.class) @ContextConfiguration(...)  
-@Sql({“/testfiles/schema.sql”, 
+?@Sql({“/testfiles/schema.sql”, 
 “/testfiles/general-data.sql”  }  )
 public  final class  MainTests  {
 
 @Test  
 @Sql
-//Run script named (by default) MainTests.success.sql in same package
+?//Run script named (by default) MainTests.success.sql in same package
 public  void  success()  {  ...  }
 
 @Test  
@@ -136,6 +136,22 @@ public void transferError()  {  ...  }
 executionPhase = ExecutionPhase.AFTER_TEST_METHOD, config = @SqlConfig(errorMode = ErrorMode.FAIL_ON_ERROR,
 commentPrefix = "//", separator = "@@"?) )
 ```
+### @TestConfiguration inheritance
+>inheritLocations = true: This means that an annotated class will inherit the resource locations or annotated classes defined by test superclasses. Specifically, the resource locations or annotated classes for a given test class will be appended to the list of resource locations or annotated classes defined by test superclasses. Thus, subclasses have the option of extending the list of resource locations or annotated classes.
+>
+This ex uses annotated classes, the ApplicationContext for ExtendedTest will be loaded from the BaseConfig and ExtendedConfig configuration classes, in that order. Beans defined in ExtendedConfig may therefore override those defined in BaseConfig.
+
+```java
+ @ContextConfiguration(classes=BaseConfig.class)
+ public class BaseTest {
+     // ...
+ }
+
+ @ContextConfiguration(classes=ExtendedConfig.class)
+ public class ExtendedTest extends BaseTest {
+     // ...
+ }
+ ```
 ## Mokito
 ```java
 import  static  org.mockito.Mockito.*;
@@ -143,7 +159,7 @@ import  static  org.mockito.Mockito.*;
 public class AuthenticatorImplTests  {  
 //  Create  a  mock  object private
 private  AccountRepository  accountRepository=  
-mock(AccountRepository.class);   
+mock(  AccountRepository.class  );   
  
 //  Inject  the  mock  object
 AuthenticatorImpl  authenticator=  new  AuthenticatorImpl(accountRepository);  
