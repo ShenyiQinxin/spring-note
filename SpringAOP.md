@@ -119,6 +119,10 @@ method pattern :
 `[Modifiers] ReturnType [ClassType] MethodName ([Arguments]) [throws ExceptionType]`
 =>
 execute(public **int** com.example.MyService.**findById**(..) throw RuntimeException)
+### Designators supported in Spring AOP and AspectJ
+>- execution, within, this, target, args, @target, @args, @within, @annotation
+>- **AspectJ only :**
+>preinitialization, initialization, staticinitialization, handler
 ### execution expression examples
  - execute(* send*(*, ..))
 	- any method starting with *send* that the first parameter is any type and any return type
