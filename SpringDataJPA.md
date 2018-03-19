@@ -4,11 +4,16 @@
 - **Entity Manager**
 	- manage persistent objects in **PersistentContext**
 	- Lifecyle bounds to transaction
-- **Entity Manager Factory**
+- **Eentity Mmanager Ffactory**
 	- thread-safe, shareable object represents a single **data source**/persistence unit
 	- provides the access to new EntityManager
 ## Entity manager work flow
 
+**EntityMangerFactory** --creates--> 
+>**EntityManager**--maps--> (application context)
+>**List<*Person*> instances** --to--> 
+>**Entities** --> persist to --> (persistence context)
+>**database**
 ![enter image description here](https://user-images.githubusercontent.com/32177380/37162073-534b58f8-22c2-11e8-9504-cff8d995b456.png)
 ## EntityManager API
 | method |persistence context  |SQL
@@ -16,7 +21,7 @@
 | **persist**(Object o) | persist entity to *   |insert into table
 |**remove**(Object o)|remove entity from *| delete from table
 |**find**(Class entity, Object pk)|find entity by pk|select * from table where id=?
-|**Query** createQuery(String jpql)|create a JPQL query|sql
+|**query** createQuery(String jpql)|create a JPQL query|sql
 |**flush**()|force entity be writtern to db immediately|and more..
 ## JPA implementations/providers
 - hibernate entitymanager(in Jboss)
@@ -27,8 +32,9 @@
 > JPA requires metadata  (annotation / orm.xml(override purpose)) for mapping **class/field** to **table/column**
 ### class - table
 ```java
-@Entity 
+@Entity  
 @Table(name=  “T_CUSTOMER”)
+
 public  class  Customer  { 
 @Id
 @Column(name=“cust_id”) private  Long  id;
@@ -47,16 +53,19 @@ private  User  curentUser;
 ### Properties / Getters - column
 ```java
 @Entity  
-@Table(name= “T_CUSTOMER”) 
+@Table(name=  “T_CUSTOMER”) 
 public  class  Customer  {
 private  Long  id;  
 private  String  fiirstName;
 @Id  
 @Column  (name=“cust_id”) 
-public  Long  getId(){  return  this.id;  }
+public  Long  getId()
+{  return  this.iid;  }
 @Column  (name=“first_name”) 
-public  String  getFirstName(){  return  this.firstName;  }
-public  void  setFirstName(String fn) {this.firstName  =  fn;  }
+public  String  getFirstName()
+{  return  this.firstName;  }
+public  void  setFirstName(String  fn) {  
+this.firstName  =  fn;  }
 
 }
 ```
@@ -126,7 +135,8 @@ public class Address {
 	private String postcode; 
 	private String country;
 }
-```
+```, where in parent table T_CUSTOMER, the join column is cust_id the PK.
+### embeddables
 ## JPA querying
 ### by PK
 ```java
@@ -135,12 +145,16 @@ Customer customer = entityManager.find(Customer.class, customerId);
 ### by JPQL
 ```java
 //  Query  with  named  parameters  
-TypedQuery<Customer>  query  =  entityManager.createQuery(“select c from Customer c where c.address.city  =  :city”,  Customer.class); 
+TypedQuery<Customer>  query  =  entityManager.createQuery(
+
+“select  c  from  Customer  c  where  c.address.city  =  :city”,  Customer.class); 
 query.setParameter(“city”,  “Chicago”);  
 List<Customer>  customers  =  query.getResultList();
 
 //  ...  or  using  a  single  statement 
-List<Customer>  customers2  =  entityManager.createQuery(“select  c  from  Customer  c  ...”,  Customer.class). setParameter(“city”,  “Chicago”).getResultList();
+List<Customer>  customers2  =  entityManager.
+
+createQuery(“select  c  from  Customer  c  ...”,  Customer.class). setParameter(“city”,  “Chicago”).getResultList();
 
 //  ...  or  if  expecting  a  single  result  
 Customer  customer  =  query.getSingleResult();
@@ -161,13 +175,14 @@ Customer  customer  =  query.getSingleResult();
 2. DataSource bean
 3. TransactionManager bean (Spring Proxy)
 4. Mapping Metadata
-5. DAOs
+5. DAOsteps
 #### 1. define a EntityManagerFactory bean
 >*LocalContainerEntityManagerFactoryBean class*
 >
 >Java config
 ```java
 @Bean  
+//FactoryBean is used
 public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
 
 HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter(); 
@@ -186,6 +201,7 @@ emfb.setDataSource(dataSource);
 emfb.setPackagesToScan("rewards.internal"); 
 emfb.setJpaProperties(props); 
 emfb.setJpaVendorAdapter(adapter);
+
 return emfb; 
 }
 ```
@@ -194,14 +210,39 @@ return emfb;
 @Bean  
 public DataSource dataSource() { // Lookup via JNDI or create locally. }
 ```
-#### 3. define a TransactionManager bean
+#### 3. XML config
+```xml
+<bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"\> <property name="dataSource" ref="dataSource"/>  
+<property name="packagesToScan" value="rewards.internal"/>
+
+<property name="jpaVendorAdapter">  
+<bean class="org.sfwk.orm.jpa.vendor.HibernateJpaVendorAdapter">
+
+<property name="showSql" value="true"/\> <property name="generateDdl" value="true"/\> <property name="database" value="HSQL"/>
+
+</bean> </property>
+
+<property name="jpaProperties">  
+<props\> <prop key="hibernate.format_sql">true</prop\> </props>
+
+</property\> </bean>
+```
+#### define a DataSource bean
+#### define a TransactionManager bean
 >*PlatformTransactionManager I<-- JpaTransactionManager class*
 ```java
 @Bean  
-public PlatformTransactionManager transactionManager(EntityManagerFactory emf) { 
+public PlatformTransactionManager 
+
+transactionManager(EntityManagerFactory emf) { 
 	//emf is gotten from Spring calling emfb.getObject() 
-	return new JpaTransactionManager(emf);//or JtaTransactionManager
+	return new JpaTransactionManager(emf);
+//or JtaTransactionManager
+
 }
+
+@Bean  
+public DataSource dataSource() { // Lookup via JNDI or create locally. }
 ```
 #### 4. define  mapping metadata
 #### 5. define DAOs / *Repository
@@ -215,7 +256,8 @@ public class JpaCustomerRepository implements CustomerRepository {
 	//JPA equivalent to @Autowired in Spring
 	public void setEntityManager (EntityManager entityManager) { 
 		this. entityManager = entityManager;
-	}
+	
+}
 
 	public Customer findById(long orderId) {  
 		return entityManager.find(Customer.class, orderId);
@@ -252,7 +294,8 @@ public CustomerRepository jpaCustomerRepository() {
 ```
 ### configuration relationships
 ![enter image description here](https://user-images.githubusercontent.com/32177380/37173629-1e19e968-22e2-11e8-9967-8446d563325f.png)
-![enter image description here](https://user-images.githubusercontent.com/32177380/37173714-574c455a-22e2-11e8-8763-4dce8b823e3f.png)
+![enter image description here](https://user-images.githubusercontent.com/32177380/37173714-574c455a-22e2-11e8-8763-4dce8b823e3f.png)### configuration relationships
+
 DataSource --is required by-->
 **LocalContainerEntityManagerFactoryBean** --creates--> 
 **EntityManagerFactory** --creates-->
@@ -282,8 +325,8 @@ CustomerServiceImpl
 
 ## Steps
 1. annotate domain classes
-2. Define your repository as an interface
-	- Spring will implement repository at run-time 
+2. D>define your repository as an interfakeys , enable persistence
+	-> Spring will implement repository at run-time 
 	- by scaning for interfaces extending Spring's `Repository<T, K>`, 
     - then autogenerate CURD methods, 
     - supports advanced customization.
@@ -293,13 +336,36 @@ CustomerServiceImpl
 ### 2. define your repository interface : 
 - Spring will implement repository at run-time 
 	- by scaning for interfaces extending Spring's `Repository<T, K>`, 
-    - then autogenerate CURD methods
+    - then autogenerate CURD methodsscans for Repository interfaces
+>
+>Java config
+```java
+@Configuration 
+@EnableJpaRepositories(basePackages=com.acme.**.repository") 
+@EnableMongoRepositories(...)  
+public class MyConfig { 
+	@Autowired
+	public CustomerRepository customerRepository;
+
+	@Bean
+	public CustomerService customerService() {  
+		return new CustomerService( customerRepository );
+	} 
+}
+```
+>XML config
+```xml
+<jpa:repositories base-package="com.acme.**.repository"/> <mongo:repositories base-package="com.acme.**.repository"/> 
+<gfe:repositories base-package="com.acme.**.repository" />
+```
+### define your repository interface : 
 ```java 
 //marker interface
 public interface Repository<T, ID> { }
 
 //You get all these methods automatically
-public interface CrudRepository<T, ID extends Serializable> extends Repository<T, ID> {
+public interface CrudRepository<T, ID  
+extends Serializable> extends Repository<T, ID> {
 
 public <S extends T> save(S entity);  
 public <S extends T> Iterable<S> save(Iterable<S> entities);
@@ -332,7 +398,7 @@ public class MyConfig { ... }
 <mongo:repositories base-package="com.acme.**.repository" /> 
 <gfe:repositories base-package="com.acme.**.repository" />
 ```
-### 4. Define JPA repository methods
+### 4. Ddefine JPA repository methods
 >Auto-generated finders obey naming convention  
 > - find(First)By"DataMember""Op"
 > - "Op" can be GreaterThan, NotEquals, Between, Like ...
@@ -345,6 +411,7 @@ public List<Customer> findByOrderDateLessThan(Date someDate);
 public List<Customer> findByOrderDateBetween(Date d1, Date d2);
 
 @Query(“SELECT c FROM Customer c WHERE c.email NOT LIKE '%@%'”)
+
 public List<Customer> findInvalidEmails(); 
 }
 ```
@@ -352,14 +419,17 @@ public List<Customer> findInvalidEmails();
 ```java
 //define your own CustomerRepository similar to CrudRepository<Customer, Long>
 public interface CustomerRepository extends Repository<Customer, Long> {
-// Definition as per CrudRepository
-<S extends Customer> save(S entity); 
+<S extends Customer> save(S entity); // Definition as per CrudRepository
+<S extends Customer> save(S entity
+Customer findOne(long i); 
 // Definition as per CrudRepository
 Customer findOne(long i);  
 // Case insensitive search 
-Customer findFirstByEmailIgnoreCase(String email); 
-// ?1 replaced by method param
+ Customer findFirstByEmailIgnoreCase(String email); 
+// ?1 replaced by method paramCase insensitive search
+
 @Query("select u from Customer u where u.emailAddress = ?1")
+
 Customer findByEmail(String email); 
 }
 ```
@@ -397,4 +467,22 @@ return new CustomerService( customerRepository );
     
     – Smart proxy works with Spring-driven transactions
     
-    – Optional translation to DataAccessExceptions (see advanced section)
+    – Optional translation to DataAccessExceptions (see advanced section)// ?1 replaced by method param
+}
+```
+>
+> - Spring implement your repository at run-time
+> - auto-generate CRUD
+> - paging, custom queires, sorting supported
+> - sub-proj are varied
+- Spring Data annotation equvalent to JPA
+```java 
+@Document class -- map to a JSON document 
+@Region class -- Gemfire – map to a region
+@NodeEntity class
+@GraphId Long id; -- Neo4J – map to a graph
+```
+-   Templates (like JdbcTemplate) for basic CRUD access
+`MongoTemplate, GemfireTemplate, RedisTemplate`
+
+
