@@ -21,8 +21,7 @@ String recursiveMethod(String str){
 	return recursiveMethod(str.subString(1))+str.charAt(0);
 }
 ```
-## 2 pyramid of numbers
-## 3 remove white spaces
+## 2 remove white spaces
  - replaceAll(originStr, fillerStr);
  ```java
 	 return str.replaceAll("\\s","");
@@ -38,11 +37,11 @@ for(int i=0; i<charArray.length; i++){
 	return sb;
 }
 ```
-### 4 remove dup elements from arraylist
+## 3 remove dup elements from arraylist
  ```java
 	 
 ```
-### 5 find dup chars
+## 4 find dup chars
  ```java
 	HashMap<Character, Integer> countMap = new HashMap<>();
 	char[] charArray = str.toCharArray();
@@ -60,7 +59,7 @@ for(int i=0; i<charArray.length; i++){
 		}
 	} 
 ```
-### 6 equality of 2 arrays
+## 5 equality of 2 arrays
 - iterative
 ```java
 	boolean equals= true;
@@ -92,7 +91,7 @@ for(int i=0; i<charArray.length; i++){
  String[][] s2={{"java", "swings", "j2ee"},{"struts", "jsp", "hibernate"}};
  Arrays.deepEquals(s1, s2);
 ```
- ### 7. Anagram
+ ## 6 Anagram
  > In a string, the same set of characters but in different order and upper/lower cases
 - **`sort(), equals()`** 
 ```java
@@ -168,10 +167,10 @@ if(s1.length() != s2.length()){
 	}//end checking each value
 }//end else
 ```
- ### 8. armstrong number
+ ## 7 armstrong number
 ```java
-	Integer num = Integer.valueOf(numInt);
-	String numStr = num.toString();
+	
+	String numStr = Integer.toString(numInt);
 	int noDigit = numStr.length();
 	int sum = 0;
 	while(num != 0){
@@ -188,7 +187,7 @@ if(s1.length() != s2.length()){
 	}	 
 	return false;
 ```
- ### 9 dup elements
+ ## 8 dup elements
  ```java
 	 HashMap<Character, Integer> countMap = new HashMap<>();
 	 char[] charArr = str.toCharArray();
@@ -206,7 +205,21 @@ if(s1.length() != s2.length()){
 		 }
 	 }
 ```
- ### 10. sum of all digits
+## 9 dup in ArrayList
+>Elements are shuffled after duplicate elements are removed. They are not in the insertion order.
+```java
+ArrayList<String> dupAL;
+HashSet<String> set = new HashSet<String>(dupAL);
+ArrayList<String> noDupAL = new ArrayList<String>(set);
+print(noDupAL);
+```
+>emove duplicate elements from ArrayList and also maintain the insertion order of elements
+```java
+LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements);
+ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
+println(listWithoutDuplicateElements);
+```
+ ## 10 sum of all digits
  - iterative
  ```java
 	 int sum = 0;
@@ -234,7 +247,7 @@ if(s1.length() != s2.length()){
 	}
 }
 ```
-### 11 second largest number
+## 11 second largest number
  ```java
 	 int largest, secondLargest;
 	 if(input[0] > input[1]){
@@ -254,11 +267,11 @@ if(s1.length() != s2.length()){
 	 }
 	 return secondLargest;
 ```
- ### 12. matrix operation
+ ## 12 matrix operation
  ```java
 	 
 ```
- ### 13. occurences of each char
+ ## 13 occurences of each char
  ```java
 	HashMap<Character, Integer> charCountMap = new HashMap<>();
 	char[] strArr = str.toCharArray();
@@ -272,23 +285,109 @@ if(s1.length() != s2.length()){
 	print(charCountMap());
 	 
 ```
- 16. largest number < a number without a given digit
+ ## 14 largest number < a number without a given digit
  ```java
+ //convert the digit to a char
+	char c = Integer.toString(digit).charAt(0);
+	for(int i=number; i>0; --i){
+	//decrease the number to check each one containing character c or not
+		if(Integer.toString(i).indexOf(c) == -1){
+			return i;
+		}
+	}
+	return -1;
+```
+ ## 15  all pairs of elements whose sum must be equal to a given number
+ >find all pairs of elements in this array such that whose sum must be equal to a given number.
+ ```java
+	 Array.sort(arr);
+	 int i=0;
+	 int j= arr.length-1;
+	 while(i<j){
+		 if(arr[i]+arr[j]==num){
+			print(num);
+			i++;
+			j--;
+		} else if(arr[i]+arr[j]<num){
+			i++;
+		} else if(arr[i]+arr[j]>num){
+			j--;
+		}
+	 }
 	 
 ```
- 17.  all pairs of elements
+ ## 16 Sub array whose sum is equal to a given number
  ```java
-	 
+	int sum = arr[0];
+	int start = 0;
+	for(int =1; i< arr.length; i++){
+		sum += arr[i];
+		while(sum > num && start <=i-1){
+		//remove starting elements from the sum
+			sum -= arr[start];
+			start ++;
+		}
+		if(sum == num){
+			Arrays.toString(arr);
+			sum;
+			for(int j=start; j<=i; j++){
+				arr[j]+" ";
+			}
+		}
+	}
 ```
- 18. sub array whose sum is equal to a given number
+ ## 17 check whether one string is a rotation of another
+ >“StrutsHibernateJavaJ2ee”, “J2eeStrutsHibernateJava”, “HibernateJavaJ2eeStruts”.
+ >“JavaJ2eeStrutsHibernateJavaJ2eeStrutsHibernate”
  ```java
-	 
+	if(s1.length() != s2.length()){
+		return false;
+	} 
+	String s3 = s1+s1;
+	if(s3.contains(s2)){
+		return true;
+	} 
+	return false;
 ```
- 19. check whether a number is binary
- ```java
-	 
-```
- 20. 
+ ## 18 check whether given number is binary or not?
 ```java
-	 
+	
+	 while(num != 0){
+		 int last = num %10;
+		 if(last >1){	 
+			 return false;
+		 } else {
+			 num /= 10;
+		 }
+	 }
+	 return true;
+```
+## 19 find common elements of two arrays
+- retainAll()
+```java
+Integer[] arr1;
+Integer[] arr2;
+HashSet<Integer> set1 = new HashSet<>(Arrays.asList(arr1));
+HashSet<Integer> set2 = new HashSet<>(Arrays.asList(arr2));
+set1.retainAll(set2);
+```
+
+## 20 check whether user input is number or not 
+```java
+class Utility{
+	static boolean numberOrNot(String input){
+		try{
+			Integer.parseInt(input);
+		}catch(NumberFormatException ex){
+			return false;
+		}
+		return true;
+	}
+}
+....
+if(Utility.numberOrNot(input) && (input.length()==10){
+	return true;
+} else {
+	return false;
+}
 ```
