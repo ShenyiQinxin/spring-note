@@ -69,6 +69,20 @@ println(listWithoutDuplicateElements);
 		 }
 	 }
 ```
+## 13 occurences of each char
+ ```java
+	HashMap<Character, Integer> charCountMap = new HashMap<>();
+	char[] strArr = str.toCharArray();
+	for(char c: strArr){
+		if(charCountMap.containsKey(c){
+			charCountMap.put(c, charCountMap.get(c)+1);
+		} else {
+			charCountMap.put(c, 1);
+		}
+	}
+	print(charCountMap());
+	 
+```
 ## 5 equality of 2 arrays
 - iterative
 ```java
@@ -263,20 +277,8 @@ if(s1.length() != s2.length()){
  ```java
 	 
 ```
- ## 13 occurences of each char
- ```java
-	HashMap<Character, Integer> charCountMap = new HashMap<>();
-	char[] strArr = str.toCharArray();
-	for(char c: strArr){
-		if(charCountMap.containsKey(c){
-			charCountMap.put(c, charCountMap.get(c)+1);
-		} else {
-			charCountMap.put(c, 1);
-		}
-	}
-	print(charCountMap());
-	 
-```
+ 
+
  ## 14 largest number < a number without a given digit
  ```java
  //convert the digit to a char
