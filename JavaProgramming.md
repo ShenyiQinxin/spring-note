@@ -51,6 +51,24 @@ LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements)
 ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
 println(listWithoutDuplicateElements);
 ```
+## 3 dup elements
+ ```java
+	 HashMap<Character, Integer> countMap = new HashMap<>();
+	 char[] charArr = str.toCharArray();
+	 for(char c: charArr){
+		 if(countMap.containsKey(c){
+			 countMap.put(c, countMap.get(c)+1);
+		 } else {
+			 countMap.put(c,1);
+		 }
+	 }
+	 Set<Character> charSet = countMap.keySet();
+	 for(Character c: charSet){
+		 if(countMap.get(c)>1){
+			 print(c+":"+countMap.get(c));
+		 }
+	 }
+```
 ## 4 find dup chars
  ```java
 	HashMap<Character, Integer> countMap = new HashMap<>();
@@ -207,24 +225,8 @@ if(s1.length() != s2.length()){
 	}	 
 	return false;
 ```
- ## 8 dup elements
- ```java
-	 HashMap<Character, Integer> countMap = new HashMap<>();
-	 char[] charArr = str.toCharArray();
-	 for(char c: charArr){
-		 if(countMap.containsKey(c){
-			 countMap.put(c, countMap.get(c)+1);
-		 } else {
-			 countMap.put(c,1);
-		 }
-	 }
-	 Set<Character> charSet = countMap.keySet();
-	 for(Character c: charSet){
-		 if(countMap.get(c)>1){
-			 print(c+":"+countMap.get(c));
-		 }
-	 }
-```
+ 
+
 
 
  ## 10 sum of all digits
