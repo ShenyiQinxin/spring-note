@@ -51,7 +51,7 @@ LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements)
 ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
 println(listWithoutDuplicateElements);
 ```
-## 3 dup elements
+## 3 dup elements/chars
  ```java
 	 HashMap<Character, Integer> countMap = new HashMap<>();
 	 char[] charArr = str.toCharArray();
@@ -68,24 +68,6 @@ println(listWithoutDuplicateElements);
 			 print(c+":"+countMap.get(c));
 		 }
 	 }
-```
-## 4 find dup chars
- ```java
-	HashMap<Character, Integer> countMap = new HashMap<>();
-	char[] charArray = str.toCharArray();
-	for(char c: charArray){
-		if(countMap.containsKey(c)){
-			countMap.put(c, countMap.get(c)+1);
-		} else {
-			countMap.put(c, 1);
-		}
-	}
-	Set<Charcter> chars = countMap.keySet();
-	for(Character ch: chars){
-		if(countMap.get(ch)>1){
-			println(countMap.get(ch));
-		}
-	} 
 ```
 ## 5 equality of 2 arrays
 - iterative
