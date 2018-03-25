@@ -37,9 +37,19 @@ for(int i=0; i<charArray.length; i++){
 	return sb;
 }
 ```
-## 3 remove dup elements from arraylist
- ```java
-	 
+## 3 dup in ArrayList
+>Elements are shuffled after duplicate elements are removed. They are not in the insertion order.
+```java
+ArrayList<String> dupAL;
+HashSet<String> set = new HashSet<String>(dupAL);
+ArrayList<String> noDupAL = new ArrayList<String>(set);
+print(noDupAL);
+```
+>emove duplicate elements from ArrayList and also maintain the insertion order of elements
+```java
+LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements);
+ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
+println(listWithoutDuplicateElements);
 ```
 ## 4 find dup chars
  ```java
@@ -205,20 +215,8 @@ if(s1.length() != s2.length()){
 		 }
 	 }
 ```
-## 9 dup in ArrayList
->Elements are shuffled after duplicate elements are removed. They are not in the insertion order.
-```java
-ArrayList<String> dupAL;
-HashSet<String> set = new HashSet<String>(dupAL);
-ArrayList<String> noDupAL = new ArrayList<String>(set);
-print(noDupAL);
-```
->emove duplicate elements from ArrayList and also maintain the insertion order of elements
-```java
-LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements);
-ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
-println(listWithoutDuplicateElements);
-```
+
+
  ## 10 sum of all digits
  - iterative
  ```java
