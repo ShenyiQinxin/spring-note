@@ -1,0 +1,41 @@
+## Find The Percentage Of Uppercase Letters, Lowercase Letters, Digits And Other Special Characters In A String 
+```java
+for(int i=0; i<str.length(); i++){
+	char c = str.charAt(i);
+	if(Character.isUpperCase(c)){
+	}
+}
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
