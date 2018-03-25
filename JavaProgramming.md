@@ -103,6 +103,7 @@ println(listWithoutDuplicateElements);
 ```
  ## 6 Anagram
  > In a string, the same set of characters but in different order and upper/lower cases
+ > “Mother In Law” and “Hitler Woman” 
 - **`sort(), equals()`** 
 ```java
 	String s1 = s1.replaceAll("\\s", "").toLowerCase();
@@ -178,6 +179,15 @@ if(s1.length() != s2.length()){
 }//end else
 ```
  ## 7 armstrong number
+ >153 = 13 + 53 + 33 = 1 + 125 + 27 = 153
+
+>371 = 33 + 73 + 13 = 27 + 343 + 1 = 371
+
+>407 = 43 + 03 + 73 = 64 + 0 + 343 = 407
+
+>9474 = 94 + 44 + 74 + 44 = 6561 + 256 + 2401 + 256 = 9474
+
+>54748 = 55 + 45 + 75 + 45 + 85 = 3125 + 1024 + 16807 + 1024 + 32768 = 54748
 ```java
 	
 	String numStr = Integer.toString(numInt);
