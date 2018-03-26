@@ -9,7 +9,7 @@
 ```java
 	char[] charArray = str.toCharArray();
 	for(int i=charArray.length-1; i>=0; i--){
-		return strArray[i];
+		print(strArray[i]);
 	} 
 ``` 
 - recursive
@@ -20,6 +20,16 @@ String recursiveMethod(String str){
 	} 
 	return recursiveMethod(str.subString(1))+str.charAt(0);
 }
+```
+## reverse an array without an additional array
+```java
+for(int i=0; i<arr.length/2; i++){
+//swap 2 ends elements
+	temp = arr[i];
+	arr[i] = arr[arr.length-1-i];
+	arr[arr.length-1-i]=temp;
+}
+Arrays.toString(arr);
 ```
 ## 2reverse each word of a string
 >Java Concept Of The Day
@@ -89,7 +99,7 @@ LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements)
 ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
 println(listWithoutDuplicateElements);
 ```
-## 6dup elements/chars
+## 6dup elements in a String / char array
  ```java
 	 HashMap<Character, Integer> countMap = new HashMap<>();
 	 char[] charArr = str.toCharArray();
@@ -107,7 +117,7 @@ println(listWithoutDuplicateElements);
 		 }
 	 }
 ```
-## 7 occurences of each char
+## 7 occurrences of each char/element in array
  ```java
 	HashMap<Character, Integer> charCountMap = new HashMap<>();
 	char[] strArr = str.toCharArray();
@@ -120,6 +130,49 @@ println(listWithoutDuplicateElements);
 	}
 	print(charCountMap());
 	 
+```
+##  Find First Repeated And Non-Repeated Character In A String
+```java
+//checking for first non-repeated character
+for(char c: strArr){
+	if(charCountMap.get(c) == 1){
+		print(c);
+		break;
+	}
+}
+
+//checking for first repeated character
+for(char c: strArr){
+	if(charCountMap.get(c) > 1){
+		print(c);
+		break;
+	}
+}
+```
+## most repeated word in text file
+```java
+reader = new BufferedReader(new FileReader("C:\\sample.txt"));
+String currentLine = reader.readLine();
+while (currentLine != null){
+	for(String w: words){
+		if(wordMap.containsKey(w)){
+			wordMap.put(w, wordMap.get(w)+1;
+		} else {
+			wordMap.put(word,1);
+		}
+	}
+	currentLine = read.readLine();
+}
+//find the most repeated word in wordMap
+int count=0;
+String target = null;
+Set<Entry<String,Integer>> entrySet = wordMap.entrySet();
+for(Entry<String, Integer> entry: entrySet){
+	if(entry.getValue()>count){
+		target = entry.getKey();
+		count = entry.getValue();
+	}
+}
 ```
 ## 8 equality of 2 arrays
 - iterative
@@ -849,5 +902,4 @@ try{
 	e.printStackTrace();
 }
 ```
-
 
