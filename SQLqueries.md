@@ -1,4 +1,10 @@
-# order of one column
+# Order of one column
+## The second highest salary among all Employees
+```sql
+select max(sal)
+from emp
+Where sal != (select max(sal) from emp);
+```
 ##  1 the number of rows in a table without using COUNT function.
 ```sql
 select max(rownum ) from 
