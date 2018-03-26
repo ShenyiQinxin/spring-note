@@ -116,7 +116,7 @@ select emp.*, rownum, rowid from emp
 where rownum<=(select count(*)-7 from emp)
 //first 8 rows
 select emp.*, rownum, rowid from emp 
-where rownum<=(select count(*)-7 from emp)
+where rownum<=8;
 ```
 ##  find the employees who are working in the company for the past 5 years.
 ```sql
