@@ -327,36 +327,35 @@ if(s1.length() != s2.length()){
 ```
  
 ## 13 armstrong number
- >153 = 13 + 53 + 33 = 1 + 125 + 27 = 153
+ >153 = 1^3 + 53 + 33 = 1 + 125 + 27 = 153
 
 >371 = 33 + 73 + 13 = 27 + 343 + 1 = 371
 
 >407 = 43 + 03 + 73 = 64 + 0 + 343 = 407
 
->9474 = 94 + 44 + 74 + 44 = 6561 + 256 + 2401 + 256 = 9474
+>9474 = 9^4 +  44 + 74 + 44 = 6561 + 256 + 2401 + 256 = 9474
 
->54748 = 55 + 45 + 75 + 45 + 85 = 3125 + 1024 + 16807 + 1024 + 32768 = 54748
+>54748 = 5^5 + 45 + 75 + 45 + 85 = 3125 + 1024 + 16807 + 1024 + 32768 = 54748
 ```java
-	
-	String numStr = Integer.toString(numInt);
-	int noDigit = numStr.length();
-	int sum = 0;
-	while(num != 0){
-		int last = num %10;
-		int lastToThePower = 1;
-		for(int i=0; i< noDigit; i--){
-			lastToThePower=lastToThePower*last;
-		}
-		sum = sum + lastToThePower;
-		num = num/10;
+String numStr = Integer.toString(numInt);
+int noDigit = numStr.length();
+int sum = 0;
+while(num != 0){
+	int last = num %10;
+	int lastToThePower = 1;
+	for(int i=0; i< noDigit; i++){
+			lastToThePower*=last;
 	}
-	if( sum == num){
-		return true;
-	}	 
+	sum = sum + lastToThePower;
+	num = num/10;
+}
+if( sum == num){
+	return true;
+}	 
 	return false;
 ```
  
-## missing number
+## 14 missing number
 > if n=8, array is {1,4,5,3,7,8,6}, then find the missing number 6
 > Missing_Number = (Sum of 1 to ‘n’ numbers) – (Sum of elements of the array)
 ```java
@@ -374,22 +373,22 @@ int sumOfElements(int[] array){
 int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 ```
 
-## 11 sum of all digits
+## 15 sum of all digits
  - iterative
- ```java
-	 int sum = 0;
-	 while(num != 0){
+```java
+int sum = 0;
+while(num != 0){
 	 //get the last digit
-		 int digit = num%10;
-		 sum = sum + digit;
-		 //remove the last digit
-		 num = num /10;
-	 }
-	 //0 or other numbers
-	 return sum;
+	int digit = num%10;
+	sum += digit;
+	//remove the last digit
+	num = num /10;
+}
+	//0 or other numbers
+	return sum;
 ```
 - recursive
- ```java
+```java
  int sumDigits(num){
 	 int sum = 0;
 	 if(num == 0){
@@ -398,12 +397,12 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 		int digit  = num %10;
 		sum += digit;
 		num /= 10;
-		sumDigits(num);	 
+		return sumDigits(num);	 
 	}
 }
 ```
-## 12 second largest number
- ```java
+## 16 second largest number
+```java
 	 int largest, secondLargest;
 	 if(input[0] > input[1]){
 		 largest = input[0];
@@ -422,14 +421,10 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 	 }
 	 return secondLargest;
 ```
- ## 12 matrix operation
- ```java
-	 
-```
  
 
- ## 13 largest number < a number without a given digit
- ```java
+## 17 largest number < a number without a given digit
+```java
  //convert the digit to a char
 	char c = Integer.toString(digit).charAt(0);
 	for(int i=number; i>0; --i){
@@ -440,9 +435,9 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 	}
 	return -1;
 ```
- ## 14  all pairs of elements whose sum must be equal to a given number
+## 18  all pairs of elements whose sum must be equal to a given number
  >find all pairs of elements in this array such that whose sum must be equal to a given number.
- ```java
+```java
 	 Array.sort(arr);
 	 int i=0;
 	 int j= arr.length-1;
@@ -456,11 +451,12 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 		} else if(arr[i]+arr[j]>num){
 			j--;
 		}
-	 }
+	}
 	 
 ```
- ## 15 Sub array whose sum is equal to a given number
- ```java
+## 19 Sub array whose sum is equal to a given number
+```java
+//arr is the original array
 	int sum = arr[0];
 	int start = 0;
 	for(int =1; i< arr.length; i++){
@@ -471,15 +467,14 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 			start ++;
 		}
 		if(sum == num){
-			Arrays.toString(arr);
-			sum;
+			print("The original array: "+Arrays.toString(arr));
 			for(int j=start; j<=i; j++){
-				arr[j]+" ";
+				print(arr[j]+" ");
 			}
 		}
 	}
-```
- ## 16 check whether one string is a rotation of another
+``` 
+## 20 check whether one string is a rotation of another
  >“StrutsHibernateJavaJ2ee”, “J2eeStrutsHibernateJava”, “HibernateJavaJ2eeStruts”.
  >“JavaJ2eeStrutsHibernateJavaJ2eeStrutsHibernate”
  ```java
@@ -492,7 +487,7 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 	} 
 	return false;
 ```
- ## 17 check whether given number is binary or not?
+## 21 check whether given number is binary or not?
 ```java
 	
 	 while(num != 0){
@@ -505,7 +500,7 @@ int missingNumber = sumOfNumbers(n)-sumOfElements(n);
 	 }
 	 return true;
 ```
-## 18 find common elements of two arrays
+## 22 find common elements of two arrays
 - retainAll()
 ```java
 Integer[] arr1;
@@ -515,7 +510,7 @@ HashSet<Integer> set2 = new HashSet<>(Arrays.asList(arr2));
 set1.retainAll(set2);
 ```
 
-## 19 check whether user input is number or not 
+## 23 check whether user input is number or not 
 ```java
 class Utility{
 	static boolean numberOrNot(String input){
@@ -534,15 +529,17 @@ if(Utility.numberOrNot(input) && (input.length()==10){
 	return false;
 }
 ```
-## 20Move Zeros To End Of An Array
+## 24 Move Zeros To End Of An Array
 >{12, 0, 7, 0, 8, 0, 3}
 >[12, 7, 8, 3, 0, 0, 0]
 ```java
 int counter = 0;
 for(int i=0; i<arr.length; i++){
 	if(arr[i] !=0 ){
+	//moves to the 1st position
 		arr[counter]=arr[i];
 	}
+	//then the 2nd position
 	counter++; //the final value is the right one next to non-zero element 89230-->4
 }
 //remaining elements are set to 0
@@ -551,7 +548,7 @@ while(counter < arr.length){
 	counter++;
 }
 ```
-## 21Move Zeros To Front Of An Array
+## 25 Move Zeros To Front Of An Array
 ```java
 int counter = arr.length-1;
 for(int i=arr.length-1; i>=0; i--){
@@ -565,7 +562,7 @@ while (counter>=0){
 	counter--;
 }
 ```
-## 22Decimal To Binary, Decimal To Octal And Decimal To HexaDecimal 
+## 26 Decimal To Binary, Decimal To Octal And Decimal To HexaDecimal 
 - decimal to binary
 ```java
 int remainder=0;
@@ -598,7 +595,7 @@ while(num>0){
 	num = num/16;
 }
 ```
-## 23Find All The Leaders In An Integer Array
+## 27 Find All The Leaders In An Integer Array
 >{14, 9, 11, 7, 8, 5, 3} is the given array then {14, 11, 8, 5, 3} are the leaders in this array.
 ```java
 int length = arr.length;
@@ -610,7 +607,7 @@ for(int i=length-2; i>=0; i--){
 	}
 }
 ```
-## 24Reverse And Add A Number Until You Get A Palindrome
+## 28 Reverse And Add A Number Until You Get A Palindrome
 >7325
 >7325 (Input Number) + 5237 (Reverse Of Input Number) = 12562
 >12562 + 26521 = 39083
@@ -653,7 +650,7 @@ boolean reverseAndAdd(int num){
 ```
 
 
-## 25HashSet examples
+## 29 HashSet examples
 > unique elements
 > no order
 > constant time for insertion, removal, retrieval
@@ -700,7 +697,7 @@ while (it.hasNext()){
 ```
 > hashCode() and equals() methods are overrided 
 > Students objects will be compared solely based on rollNo, same rollNo will be considered as duplicates irrespective of other fields.
-## 26 LinkedHashSet
+## 30 LinkedHashSet
 ### implementation mechanism
 >- all methods are inherited from **HashSet**
 >- elements are stored as the keys in a **LinkedHashMap** to maintain an insertion order. values are the same constant i.e "PRESENT". 
@@ -746,7 +743,7 @@ while (it.hasNext()){
 879 : Sapna
 //duplicate elements are not added to LinkedHashSet.
 ```
-##  27TreeSet Example
+##  31 TreeSet Example
 > no dup, ordered by a comparator
 > no comparator, natural order
 > if compare() is based on id, then the same id elements are seen as dups, the later added dup is removed
@@ -797,7 +794,7 @@ while (it.hasNext())
 417 : David : 82
 231 : Cherry : 71 
 ```
-## 28PriorityQueue Example
+## 32 PriorityQueue Example
 >order elements on a priority basis i.e. employees salaries in ascending order or customers are ordered on their id
 >- with default comparator - natural ascending order
 ```java
@@ -832,7 +829,7 @@ CCC : 750
 BBB : 12000
 GGG : 14300
 ```
-## 29LinkedList 
+## 33 LinkedList 
 >same with ArrayList 
 ```java
 list.contains(111.11);//check a given element is in the arraylist or not
@@ -863,7 +860,7 @@ linkedList.add(22);addLast(22);offer(22);offerLast(22);
 //insert at the head
 linkedList.addFirst(22);addFirst(22);
 ```
-## 30ArrayList
+## 34 ArrayList
 >ArrayList() —> It creates an empty ArrayList with initial capacity of 10.
 >ArrayList(int initialCapacity) —> It creates an empty ArrayList with supplied initial capacity.
 >ArrayList(Collection c) —> It creates an ArrayList containing the elements of the supplied collection.
@@ -906,7 +903,7 @@ list1.addAll(list2);
 //add one arraylist to a position of the other arraylist
 list1.addAll(2, list2);//[0,1,2,3][4,5,6,7]->[0,1,4,5,6,7,2,3]
 ```
-## Array and ArrayList conversion
+## 35 Array and ArrayList conversion
 - Array to ArrayList
 ```java
 String[] array = new String[]{"ANDROID", "JSP", "JAVA", "STRUTS"};
@@ -927,14 +924,14 @@ for(String str: array){
 	print(str);
 }
 ```
-## Arrays.deepToString()
+## 36 Arrays.deepToString()
 ```java
 //Printing dimensional array contents
 print(Arrays.deepToString(oneDArray));
 print(Arrays.deepToString(twoDArray));
 print(Arrays.deepToString(threeDArray));
 ```
-## Launch External Applications Through Java Program
+## 37 Launch External Applications Through Java Program
 ```java
 //every java application has only one RunTime instance in which application is running.
 Runtime runtime = Runtime.getRuntime();
@@ -945,4 +942,461 @@ try{
 	e.printStackTrace();
 }
 ```
+## 38 Find The Percentage Of Uppercase Letters, Lowercase Letters, Digits And Other Special Characters In A String 
+>Character.isUpperCase(ch) –> This method checks whether ‘ch’ is in uppercase or not.
+>Character.isLowerCase(ch) –> This method checks whether ‘ch’ is in lowercase or not.
+>Character.isDigit(ch) –> This method checks whether ‘ch’ is a digit or not.
+```java
+for(int i=0; i<str.length(); i++){
+	char c = str.charAt(i);
+	if(Character.isUpperCase(c)){
+		upperCaseLetters++;
+	} else if(Character.isLowerCase(c)){
+		lowerCaseLetters++;
+	} else if(Character.idDigit(c)){
+		digits++;
+	} else{
+		others++;
+	}
+}
+double upperCaseLetterPercentage = (upperCaseLetters * 100.0) / totalChars ;
+double lowerCaseLetterPercentage = (lowerCaseLetters * 100.0) / totalChars;
+double digitsPercentage = (digits * 100.0) / totalChars;
+double otherCharPercentage = (others * 100.0) / totalChars;
+DecimalFormat formatter = new DecimalFormat("##.##");
+formatter.format(upperCaseLetterPercentage);//19.90
+```
+## 39 Sorting
+- selection sort
+>  Select the lowest (or highest) element
+>  Swap the lowest with the current 
+>  the lowest, the 2nd lowest, the 3rd lowest and so on.
+```java
+for(int i=0; i<arr.length-1; i++){
+	pos = i;//i indexes the current 
+	for(int j=i+1; j<arr.length; j++){
+		if(arr[j]<arr[pos]{
+			pos =j;//pos indexes the min 
+		}
+	}
+	//swap current and min
+	temp = arr[i];
+	arr[i] = arr[pos];
+	arr[pos] = temp;
+}
+```
+- sort an ArrayList
+>Collections.sort(List<T> list)   natural order
+>sort(List<T> list, Comparator<? super T> c) order defined in Comparator
+```java
+//number string types
+ArrayList<String> list = new ArrayList<String>();
+Collections.sort(list);
+Collections.sort(list, String.CASE_INSENSITIVE_ORDER);
+Collections.sort(list, Collections.reverseOrder());
+//complex types
+class Student implements Comparable<Student>{
+	@Override
+    public int compareTo(Student s){return this.id - s.id; }
+ArrayList<Student> listOfStudents = new ArrayList<Student>();
+Collections.sort(listOfStudents);
+//
+class OrderByPercentage implements Comparator<Student>{
+    @Override
+    public int compare(Student s1, Student s2){
+	    return s1.percentage - s2.percentage;
+	}
+}
+Collections.sort(listOfStudents, new OrderByPercentage());
+```
+## 40 Append Text To An Existing File
+```java
+FileWriter fileWriter = null;
+BufferedWriter bufferedWriter = null;
+PrintWriter printWriter = null;
+try{
+	fileWriter = new FileWriter("C:\\sample.txt", true);
+	bufferedWriter = new BufferedWriter(fileWriter);
+	printWriter = PrintWriter(bufferedWriter);
+	printWriter.println();
+	printWriter.println("Venkatesh : 789546");
+	printWriter.println("Venkatesh : 789546");
+	printWriter.println("Venkatesh : 789546");
+}
+catch(IOException e){
+	e.printStackTrace();
+}
+finally{
+	try
+            {
+                printWriter.close();
+                bufferedWriter.close();
+                fileWriter.close();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+}
+```
+##  41 Sort A Text File
+>one line of Strings
+>
+|  input| output |
+|--|--|
+| 56 Suresh Mahesh Abhi 81 Vikas Bhavani Nalini 62 |56 62 81 Abhi Bhavani Mahesh Nalini Suresh Vikas
+```java
+BufferedReader reader = null; 
+BufferedWriter writer = null;
+ArrayList<String> lines = new ArrayList<String>();
+try{
+	reader = new BufferedReader(new FileReader("c:\\input.txt"));
+	String current = reader.readLine();
+	while(current != null){
+		lines.add(current);
+		current = reader.readLine();
+	}
+	Collections.sort(lines);
+	writer.new BufferedWriter(new FileWriter("c:\\output.txt"));
+	for(String line: lines){
+		writer.write(line);
+		writer.newLine();
+	}
+}
+catch(IOException e){ e.printStackTrace();}
+finally {
+	try{
+	    if (reader != null){
+                    reader.close();
+        }
+        if(writer != null){
+                    writer.close();
+        }
+     }catch (IOException e) {
+                e.printStackTrace();
+     }
+}
+```
+>two lines of strings
+> Vikas 92
+Mahesh 89
+Shloka 84
+Shyam 81
+Abhi 71
+Bhavani 68
+Nalini 62
+Suresh 56
+```java
+/Student Class
+ 
+class Student{
+    String name;
+	int marks;
+    public Student(String name, int marks) {
+        this.name = name; 
+        this.marks = marks;
+    }
+}
+ 
+//nameCompare Class to compare the names
+class nameCompare implements Comparator<Student>{
+    @Override
+    public int compare(Student s1, Student s2){
+        return s1.name.compareTo(s2.name);
+    }
+}
+ 
+//marksCompare Class to compare the marks
+ class marksCompare implements Comparator<Student>{
+    @Override
+    public int compare(Student s1, Student s2){
+        return s2.marks - s1.marks;
+    }
+}
+//
+BufferedReader reader = new BufferedReader(new FileReader("C:\\input.txt")); 
+BufferedWriter writer = = new BufferedWriter(new FileWriter("C:\\output.txt"));
+ArrayList<Student> lines = new ArrayList<>();
+String current = reader.readLine();
+while(current != null){
+	String[] student = current.split(" ");
+	String name = student[0];
+	int mark = Integer.valueOf(student[1]);
+	lines.add(new Student(name, mark));
+	current = reader.readLine();
+}
+Collections.sort(lines, new marksCompare());
+for (Student student : lines){
+            writer.write(student.name);     
+            writer.write(" "+student.marks);
+            writer.newLine();
+}
+reader.close();
+writer.close();
+```
+## 42 Find Longest Substring Without Repeating Characters 
+```java
+char[] arr = str.toCharArray();
+String longest = null;
+int longestLength = 0;
+LinkedHashMap<Character,Integer> map = new LinkedHashMap<>();
+for(int i=0; i<arr.length; i++){
+	char ch = arr[i];
+	if(!map.containsKey(ch)){
+		map.put(ch, i);
+	} else {
+	//reposioning the cursor i to the position of ch
+	//the new substring start from i+1
+		i=map.get(ch);
+		//clearing the charPosMap
+		map.clear();
+	}
+	if(map.size()>longestLength){
+		longestLength = map.size();
+		longest = map.keySet().toString();
+	}
+}
+```
+## 43 Swap Two String Variables Without Using Third Variable
+```java
+s1 = s1+s2;
+s2 = s1.substring(0, s1.length()-s2.length());
+s1=s1.substring(s2.length());
+```
+## 44 Stop A Thread
+```java
+//volatile will make thread to read its value from the main memory, thus making sure that thread always gets its updated value.
+class MyThread extends Thread{
+	private volatile boolean flag = true;
+	public void stopRunning(){
+        flag = false;
+    }
+    @Override
+    public void run()
+    {
+        //Keep the task in while loop
+        //This will make thread continue to run until flag becomes false
+         
+        while (flag){
+            System.out.println("I am running....");
+        }
+        System.out.println("Stopped Running....");
+    }
+}
+public static void main(String[] args){ 
+	MyThread thread = new MyThread();
+        thread.start();
+         
+        try{
+            Thread.sleep(100);
+        } 
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
+         
+        //call stopRunning() method whenever you want to stop a thread
+		thread.stopRunning();
+}
+```
+## 45 Synchronize ArrayList, HashSet And HashMap 
+```java
+ ArrayList<String> list = new ArrayList<String>();
+ HashSet<String> set = new HashSet<String>();
+ HashMap<String, Integer> map = new HashMap<String, Integer>();
+ 
+ List<String> synchronizedList = Collections.synchronizedList(list);
+  Set<String> synchronizedSet = Collections.synchronizedSet(set);
+  Map<String, Integer> synchronizedMap = Collections.synchronizedMap(map);
+//
+ synchronized (synchronizedList) {
+ Iterator<String> it = synchronizedList.iterator();
+     while (it.hasNext()) {
+                System.out.println(it.next());
+            }
+ }
+ //
+ synchronized (synchronizedSet) 
+        {
+            Iterator<String> it = synchronizedSet.iterator();
+             
+            while (it.hasNext()) 
+            {
+                System.out.println(it.next());
+            }
+        }
+//
+ Set<String> keySet = synchronizedMap.keySet();
+ synchronized (synchronizedMap) 
+        {
+            Iterator<String> it = keySet.iterator();
+             
+            while (it.hasNext()) 
+            {
+                System.out.println(it.next());
+            }
+        }
+//
+Collection<Integer> values = synchronizedMap.values();
+synchronized (synchronizedMap) 
+        {
+            Iterator<Integer> it = values.iterator();
+             
+            while (it.hasNext()) 
+            {
+                System.out.println(it.next());
+            }
+        }
+```
+## 46 Number Of Characters, Words And Lines In File
+```java
+BufferedReader reader = null;
+ int charCount = 0;
+ int wordCount = 0;
+ int lineCount = 0;
+ try{
+	reader = new BufferedReader(new FileReader("C:\\sample.txt"));
+	String currentLine = reader.readLine();
+	while(currentLine!=null){
+		lineCount++;
+		String[] words = currentLine.split(" ");
+		wordCount = wordCount + words.length;
+		for(String w: words){
+			charCount = charCount+word.length();
+		}
+		//Reading next line into currentLine
+		currentLine = reader.readLine();
+	}
 
+}
+ catch(IOException e){e.printStackTrace();}
+ finally{
+try
+            {
+                reader.close();           //Closing the reader
+            }
+            catch (IOException e) 
+            {
+                e.printStackTrace();
+            }
+}
+```
+## 47 Convert HashMap To ArrayList
+```java
+HashMap<String, String> map = new HashMap<String, String>();
+Set<String> keySet = map.keySet();
+Collection<String> values = map.values();
+Set<Entry<String, String>> entrySet = map.entrySet();
+ArrayList<String> listOfKeys = new ArrayList<String>(keySet);
+ArrayList<String> listOfValues = new ArrayList<String>(values);
+ArrayList<Entry<String, String>> listOfEntry = new ArrayList<Entry<String,String>>(entrySet);
+
+```
+## 48 All Permutations Of String
+```java
+void StringPermutation(String prefix, String input){
+	int n=input.length();
+	if(n==0){
+		print(prefix);
+	} 
+	for(int i=0; i<n; i++){
+		StringPermutation(prefix+input.charAt(i),
+		input.substring(0,i)+input.substring(i+1, n));
+	}
+}
+void StringPermutation(String input){
+	StringPermutation("", input);
+}
+```
+## 49 Check If Number Belongs To Fibonacci Series Or Not
+>fibonacci Series : 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89……..
+```java
+int firstTerm = 0;
+int secondTerm = 1;
+int thirdTerm = 0;
+while (thirdTerm < inputNumber){
+  thirdTerm = firstTerm + secondTerm;
+  firstTerm = secondTerm;
+  secondTerm = thirdTerm;
+}
+ if(thirdTerm == inputNumber)
+        {
+            System.out.println("Number belongs to Fibonacci series");
+        }
+        else
+        {
+            System.out.println("Number doesn't belongs to Fibonacci series");
+        }
+```
+## 50 String To Integer And Integer To String Conversion
+- String To Integer 
+```java
+Integer.parseInt(str);
+Integer.valueOf(str);
+```
+- Integer To String
+```java
+Integer.toString(num);
+String.valueOf(num);
+```
+
+## 51 HashMap
+> creating HashMap 
+```java
+ HashMap<String, Integer> map1 = new HashMap<String, Integer>();
+//2. Creating HashMap with 30 as initial capacity 
+HashMap<String, Integer> map2 = new HashMap<String, Integer>(30);
+//3. Creating HashMap with 30 as initial capacity and 0.5 as load factor
+HashMap<String, Integer> map3 = new HashMap<String, Integer>(30, 0.5f);
+//4. Creating HashMap by copying another HashMap
+HashMap<String, Integer> map4 = new HashMap<String, Integer>(map1);
+```
+- about key-value pairs
+```java
+map.put("ONE", 1);
+HashMap<String, Integer> anotherMap = new HashMap<String, Integer>();
+anotherMap.putAll(map);
+//when the pair is absent, add the pair
+map.putIfAbsent("ONE", 111);
+//retrieve a value associated with a given key 
+int value = map.get("TWO");
+//check whether a particular key/value exist
+map.containsKey(3);//true
+map.containsValue(3.3);//true
+//k-v pair count
+map.size();
+//clear the map
+ map.clear();
+//retrieve key set
+Set<Integer> keySet = map.keySet();
+//retrieve values
+map.values();
+//retrieve all k-v pairs
+Set<Entry<String, String>> keyValueSet = map.entrySet();
+//remove a key-value pair
+map.put("ONE", "AAA");
+map.remove("ONE");
+//remove sucessfully
+map.remove("ONE","AAA");
+//remove failed
+map.remove("ONE","CCC");
+//replace a value given a key
+map.replace("THREE", "333");
+//replace a value only when the paired key 
+map.put("FOUR", "DDD");    
+map.replace("FOUR", "DDD", "444");//success becomes FOUR: 444
+// synchronized HashMap
+ Map<String, Integer> syncMap = Collections.synchronizedMap(map);
+
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
+##
+```java
+```
