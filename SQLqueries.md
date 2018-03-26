@@ -1,4 +1,4 @@
-## Select 5th maximum salary from a table
+## 1 Select 5th maximum salary from a table
 >Write a query to select Nth maximum salary from EMP table
 (or)
 Write a query to find 2nd, 3rd max salary from EMP table
@@ -22,7 +22,7 @@ select * from
 (select emp.*, dense_rank() over (order by sal desc) rn from emp)
 where rn=5
 ```
-## Top N salaries from EMP table
+## 2 Top N salaries from EMP table
 >select maximum N salaries from the EMP table
 ```sql
 select * from 
@@ -31,7 +31,7 @@ select emp.*, dense_rank() over (order by nvl(sal,0) desc) rn from emp
 )
 where rn<=5;
 ```
-### Select top 3 salaries from each Department of EMP table
+## 3 Select top 3 salaries from each Department of EMP table
 > select maximum N salaries from each department of the EMP table
 ```sql
 select * from
@@ -41,7 +41,7 @@ from emp
 )
 where rn<=3
 ```
-##  select/delete duplicate rows from the EMP table
+##  4 select/delete duplicate rows from the EMP table
 > rowid
 ```sql
 select * from emp
@@ -54,7 +54,7 @@ delete from emp
 where rowid not in
 (select min(rowid) from emp group by empno
 ```
-## select only those employee information who are earning the same salary?
+## 5 select only those employee information who are earning the same salary?
 - 1st
 ```sql
 select e1.* from emp e1 inner join emp e2 
@@ -73,20 +73,20 @@ select * from
 (select emp.*, count(*) over (partition by sal orderby sal) cnt from emp)
 where cnt>=2;
 ```
-## display even/odd number rows from a table
+## 6 display even/odd number rows from a table
 ```sql
 select * from
 (select empno, ename, sal, rownum rn from emp order by empno)
 where mod(rn, 2)!=0
 order by rn
 ```
-## more than 2 employees under a manager
+## 7more than 2 employees under a manager
 ```sql
 select * from 
-(select *, count(mgr) over (partition by mgr) as cnt from emp)
+(select emp.*, count(mgr) over (partition by mgr) as cnt from emp)
 where cnt>=2
 ```
-##  find the maximum salary from the EMP table without using functions.
+##  8 find the maximum salary from the EMP table without using functions.
 ```sql
 select * from emp
 where sal not in
@@ -94,19 +94,19 @@ where sal not in
 select e1.sal from emp e1 inner join emp e2 on e1.sal<e2.sal
 )
 ```
-##  the number of rows in a table without using COUNT function.
+##  9 the number of rows in a table without using COUNT function.
 ```sql
 select max(rownum ) from 
 (select rownum from emp )
 ```
-##  find the LAST inserted record in a table.
+##  10 find the LAST inserted record in a table.
 >If you want the last record inserted, you need to have a timestamp or sequence number assigned to each
 record as they are inserted and then you can use the below query…
 ```sql
 select * from emp
 where assume_rowid= (select max(assume_rowid) from emp);
 ```
-## Select LAST 7 records from a table
+## 11 Select LAST 7 records from a table
 ```sql
 //15 rows in total
 //last 7 rows
@@ -118,22 +118,7 @@ where rownum<=(select count(*)-7 from emp)
 select emp.*, rownum, rowid from emp 
 where rownum<=8;
 ```
-##  find the employees who are working in the company for the past 5 years.
+##  12 find the employees who are working in the company for the past 5 years.
 ```sql
 select * from emp where hiredate< add_months(sysdate, -60);
-```
-##
-```sql
-```
-##
-```sql
-```
-##
-```sql
-```
-##
-```sql
-```
-##
-```sql
 ```
