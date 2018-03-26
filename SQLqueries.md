@@ -58,6 +58,7 @@ where rn<=3
 # dup
 ##  6 select/delete duplicate rows from the EMP table
 > rowid
+> records with min(rowid) are  a unique set, others are dups
 ```sql
 select * from emp
 where rowid not in
@@ -89,11 +90,18 @@ select * from
 where cnt>=2;
 ```
 
-## 8 more than 2 employees under a manager
+## 8 Display the employees where "more than 2 employees under a manager"
 ```sql
 select * from 
 (select emp.*, count(mgr) over (partition by mgr) as cnt from emp)
 where cnt>=2
+
+//manager with its employee count
+select mgr, count(empno) cnt
+from emp
+group by mgr
+order by cnt;
+
 ```
 ## 9 display even/odd number rows from a table
 ```sql
