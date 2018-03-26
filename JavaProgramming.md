@@ -21,7 +21,7 @@ String recursiveMethod(String str){
 	return recursiveMethod(str.subString(1))+str.charAt(0);
 }
 ```
-## reverse an array without an additional array
+## 2reverse an array without an additional array
 ```java
 for(int i=0; i<arr.length/2; i++){
 //swap 2 ends elements
@@ -31,7 +31,7 @@ for(int i=0; i<arr.length/2; i++){
 }
 Arrays.toString(arr);
 ```
-## 2reverse each word of a string
+## 3reverse each word of a string
 >Java Concept Of The Day
 avaJ tpecnoC fO ehT yaD
 ```java
@@ -46,7 +46,7 @@ for(int i=0; i<words.length; i++){
 	reversedStr = reverseStr+ reversedWord +" ";
 }
 ```
-## 3 remove white spaces
+## 4 remove white spaces
  - replaceAll(originStr, fillerStr);
  ```java
 	 return str.replaceAll("\\s","");
@@ -62,12 +62,13 @@ for(int i=0; i<charArray.length; i++){
 	return sb;
 }
 ```
-## 4Reverse The String With Preserving The Position Of Spaces
+## 5 Reverse The String With Preserving The Position Of Spaces
 >I Am Not String —> g ni rtS toNmAI
 ```java
 char[] arr = str.toCharArray();
-int length = arr.length;
 char[] newArr = new char[length];
+int length = arr.length;
+
 for(int i=0; i<length; i++){
 	if(arr[i] == ' '){
 		newArr[i]= ' ';
@@ -85,7 +86,7 @@ for(int i=0; i<length; i++){
 }
 return String.valueOf(newArray);
 ```
-## 5 dup in ArrayList
+## 6 dup in ArrayList
 >Elements are shuffled after duplicate elements are removed. They are not in the insertion order.
 ```java
 ArrayList<String> dupAL;
@@ -93,13 +94,30 @@ HashSet<String> set = new HashSet<String>(dupAL);
 ArrayList<String> noDupAL = new ArrayList<String>(set);
 print(noDupAL);
 ```
->emove duplicate elements from ArrayList and also maintain the insertion order of elements
+>remove duplicate elements from ArrayList and also maintain the insertion order of elements
 ```java
-LinkedHashSet<String> set = new LinkedHashSet<String>(listWithDuplicateElements);
-ArrayList<String> listWithoutDuplicateElements = new ArrayList<String>(set);
-println(listWithoutDuplicateElements);
+ArrayList<String> dupAL;
+LinkedHashSet<String> set = new LinkedHashSet<String>(dupAL);
+ArrayList<String> noDupAL= new ArrayList<String>(set);
+println(noDupAL);
 ```
-## 6dup elements in a String / char array
+
+
+## 7 occurrences of each char/element in array
+ ```java
+	HashMap<Character, Integer> charCountMap = new HashMap<>();
+	char[] strArr = str.toCharArray();
+	for(char c: strArr){
+		if(charCountMap.containsKey(c){
+			charCountMap.put(c, charCountMap.get(c)+1);
+		} else {
+			charCountMap.put(c, 1);
+		}
+	}
+	print(charCountMap());
+	 
+```
+## 8 dup elements in a String / char array
  ```java
 	 HashMap<Character, Integer> countMap = new HashMap<>();
 	 char[] charArr = str.toCharArray();
@@ -117,24 +135,18 @@ println(listWithoutDuplicateElements);
 		 }
 	 }
 ```
-## 7 occurrences of each char/element in array
- ```java
-	HashMap<Character, Integer> charCountMap = new HashMap<>();
-	char[] strArr = str.toCharArray();
-	for(char c: strArr){
-		if(charCountMap.containsKey(c){
-			charCountMap.put(c, charCountMap.get(c)+1);
-		} else {
-			charCountMap.put(c, 1);
-		}
-	}
-	print(charCountMap());
-	 
-```
-##  Find First Repeated And Non-Repeated Character In A String
+##  9 Find First Repeated And Non-Repeated Character In A String
 ```java
+char[] charArr = str.toCharArray();
+for(char c: charArr){
+		 if(countMap.containsKey(c){
+			 countMap.put(c, countMap.get(c)+1);
+		 } else {
+			 countMap.put(c,1);
+		 }
+}
 //checking for first non-repeated character
-for(char c: strArr){
+for(char c: charArr){
 	if(charCountMap.get(c) == 1){
 		print(c);
 		break;
@@ -142,17 +154,20 @@ for(char c: strArr){
 }
 
 //checking for first repeated character
-for(char c: strArr){
+for(char c: charArr){
 	if(charCountMap.get(c) > 1){
 		print(c);
 		break;
 	}
 }
 ```
-## most repeated word in text file
+## 10 most repeated word in text file
 ```java
-reader = new BufferedReader(new FileReader("C:\\sample.txt"));
+
+BufferedReader reader = new BufferedReader(new FileReader("C:\\sample.txt"));
 String currentLine = reader.readLine();
+HashMap<String, Integer> wordMap= new HashMap<>();
+
 while (currentLine != null){
 	for(String w: words){
 		if(wordMap.containsKey(w)){
@@ -173,8 +188,9 @@ for(Entry<String, Integer> entry: entrySet){
 		count = entry.getValue();
 	}
 }
+print("The most repeated word is "+target +": "+count)
 ```
-## 8 equality of 2 arrays
+## 11 equality of 2 arrays
 - iterative
 ```java
 	boolean equals= true;
@@ -206,7 +222,7 @@ for(Entry<String, Integer> entry: entrySet){
  String[][] s2={{"java", "swings", "j2ee"},{"struts", "jsp", "hibernate"}};
  Arrays.deepEquals(s1, s2);
 ```
- ## 9 Anagram
+## 12 Anagram
  > In a string, the same set of characters but in different order and upper/lower cases
  > “Mother In Law” and “Hitler Woman” 
 - **`sort(), equals()`** 
@@ -230,7 +246,7 @@ for(Entry<String, Integer> entry: entrySet){
 	String s1 = s1.replaceAll("\\s", "").toLowerCase();
 	String s2 = s2.replaceAll("\\s", "").toLowerCase();
 	boolean status = true;
-	if(s1.length() != s2.length(){
+	if(s1.length() != s2.length()){
 		status = false;
 	} else {
 		char[] s1Arr = s1.toCharArray();
@@ -250,6 +266,32 @@ for(Entry<String, Integer> entry: entrySet){
 		}
 		return true;
 	}
+```
+-StringBuilder
+```java
+String s1 = s1.replaceAll("\\s","").toLowerCase();
+String s2 = s2.replaceAll("\\s","").toLowerCase();	 
+
+if(s1.length() != s2.length()){
+	return false;
+} else {
+	char[] s1Arr = s1.toCharArray();
+	StringBuilder sb2 = new StringBuilder(s2);
+	for(char c: s1Arr){
+		int index = sb2.indexOf(""+c);
+		if(index != -1){
+			sb2 = sb2.deleteCharAt(index);
+		} else {
+			status = false;
+			break;
+		}
+	}
+}
+if(status){
+    System.out.println(s1+" and "+s2+" are anagrams");
+}else{
+    System.out.println(s1+" and "+s2+" are not anagrams");
+}
 ```
 - HashMap
 ```java
@@ -283,7 +325,8 @@ if(s1.length() != s2.length()){
 	}//end checking each value
 }//end else
 ```
- ## 10 armstrong number
+ 
+## 13 armstrong number
  >153 = 13 + 53 + 33 = 1 + 125 + 27 = 153
 
 >371 = 33 + 73 + 13 = 27 + 343 + 1 = 371
