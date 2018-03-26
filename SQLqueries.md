@@ -104,7 +104,7 @@ select max(rownum ) from
 record as they are inserted and then you can use the below query…
 ```sql
 select * from emp
-where rowid= (select max(rowid) from emp);
+where assume_rowid= (select max(assume_rowid) from emp);
 ```
 ## Select LAST 7 records from a table
 ```sql
