@@ -1,16 +1,17 @@
 # Order of one column
-## The second highest salary among all Employees
+
+
+##  1 the number of rows in a table without using COUNT function.
+```sql
+select max(rownum ) from emp;
+```
+## 2.1 The second highest salary among all Employees
 ```sql
 select max(sal)
 from emp
 where sal != (select max(sal) from emp);
 ```
-##  1 the number of rows in a table without using COUNT function.
-```sql
-select max(rownum ) from 
-(select rownum from emp )
-```
-## 2 Select 5th maximum salary from a table
+## 2.2 Select 5th maximum salary from a table
 >Write a query to select Nth maximum salary from EMP table
 (or)
 Write a query to find 2nd, 3rd max salary from EMP table
@@ -23,7 +24,7 @@ Write a query to find 4th highest salary (without analytical function)
 select * 
 from emp e1
 where (5-1) =
-(select count(distinct(e2.sal))
+(select count(distinct(nvl(e2.sal,0)))
 from emp e2
 where e2.sal >= e1.sal
 )
@@ -31,7 +32,7 @@ where e2.sal >= e1.sal
 - with function `dense_rank() ` continuously ranking
 ```sql
 select * from 
-(select emp.*, dense_rank() over (order by sal desc) rn from emp)
+(select emp.*, dense_rank() over (order by nvl(sal,0) desc) rn from emp)
 where rn=5
 ```
 ##  3 find the maximum salary from the EMP table without using functions.
@@ -103,13 +104,20 @@ select * from
 where cnt>=2
 
 //manager with its employee count
+select e1.empno, e1.mgr, e2.cnt
+from emp e1 inner join (
 select mgr, count(empno) cnt
 from emp
 group by mgr
-order by cnt;
+having count(empno)>=2
+order by cnt
+) e2
+on e1.mgr = e2.mgr
 
 ```
 ## 9 display even/odd number rows from a table
+//first retrieve the rownum as a column RN
+//if directly filter by mod(rownum,2), then it only retrieves the 1st row found
 ```sql
 select * from
 (select empno, ename, sal, rownum rn from emp order by empno)
@@ -130,12 +138,16 @@ where rownum<=8;
 ```
 ##  11 find the employees who are working in the company for the past 5 years.
 ```sql
-select * from emp where hiredate< add_months(sysdate, -60);
+select * from emp where hiredate<= add_months(sysdate, -60);
 ```
 ##  12 find the LAST inserted record in a table.
 >If you want the last record inserted, you need to have a timestamp or sequence number assigned to each
 record as they are inserted and then you can use the below query…
 ```sql
+//assume empno is increased and assigned to a new employee when he joins in
 select * from emp
-where assume_rowid= (select max(assume_rowid) from emp);
+where empno = (
+select max(empno) from emp
+)
 ```
+## add more from trick questions
