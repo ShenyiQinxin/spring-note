@@ -8,10 +8,12 @@
 - proxy-target-class="true" forces the use of CGLIB
 ### after all the bean properties have been set (DI is done)
 - methods with @PostConstruct
-- afterPropertiesSet()
-- methods in init-method attribute in XML 
-
-are called
+- afterPropertiesSet() in InitializingBean interface
+- methods in init-method attribute in XML are called
+### destruction customization ways (in order)
+- @PreDestroy
+- destroy() in DisposableBean interface
+- destroy-method in XML
 
 ### __ enables the registering a bean
 > 'profile' attribute in xml `<beans>`
@@ -113,20 +115,76 @@ private Greeter greeter;
 ```
 - @Weekend is a custom qualifier
 ```xml
-<qualifer type=
-```
+<qualifer type="Weekend">
+	<attribute key="timeOfDay" value="Morning"/>
+</qualifer>
 
-```java
+<meta key="timeOfDay" value="Morning"/>
 ```
+### Autowired
+- autowire Map when the key type is String
+- there is no searchBy attribute
 ```java
+@Autowired(required=true)
+public MySource(MyConnection myConnection){}
+
+@Autowired
+private MyFile[] myFiles;
 ```
+### jdbcTemplate
+- update returns the number of rows affected
+- when 1 row is inserted, then 1 will be returned
+- throws runtime exception DataAccessException
 ```java
+this.jdbcTemplate.update("insert into Account (accountId, name) values (?, ?)",1, "John");
 ```
+### @PathVariable
 ```java
+@RequestMapping(value="/{id}")
+public String viewUserAddress(@PathVariable String id, Model m){}
 ```
-```java
+### EntityManager
+@PersistenceUnit can be annotated on a property whose type is EntityManagerFactory. an implementation of a entitymanagerFactory can create an entityManager and use it to perform database operations.
+
+### @EnableWebMVC
+- enables mvc java config
+- is in a class annotated with @Configuration
+
+### lookup-method
+- when singleton calls prototype bean
+- the prototype bean method is overriden as look-up method to get a new instance every time required
+```xml
+<!-- a stateful bean deployed as a prototype (non-singleton) -->
+<bean id="command" class="fiona.apple.AsyncCommand" scope="prototype">
+    <!-- inject dependencies here as required -->
+</bean>
+
+<!-- commandProcessor uses statefulCommandHelper -->
+<bean id="commandManager" class="fiona.apple.CommandManager">
+    <lookup-method name="createCommand" bean="command"/>
+</bean>
 ```
+### Spring boot externalize configuration
+- properties
+- YAML
+- environment variables
+### `<property name="age" value="5"`
+- internally, PropertyEditor converts string to actual type i.e. integer
+### context which loads xml files
 ```java
+ClassPathXmlApplicationContext
+FileSystemXmlApplicationContext
+```
+### Embedded containers in Spring boot
+- Tomcat
+- Jetty
+- Undertow
+### xml configuration value
+- spring supports Collection types been convered from "...", done by reflection
+- "" is treated as empty string
+- `<null/>` represents null
+```java
+
 ```
 ```java
 ```
