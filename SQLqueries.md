@@ -24,9 +24,9 @@ Write a query to find 4th highest salary (without analytical function)
 select * 
 from emp e1
 where (5-1) =
-(select count(distinct(nvl(e2.sal,0)))
+(select count(distinct(e2.sal))
 from emp e2
-where e2.sal >= e1.sal
+where e2.sal > e1.sal
 )
 ```
 - with function `dense_rank() ` continuously ranking
@@ -61,6 +61,18 @@ select emp.*, dense_rank() over (partition by deptno order by sal desc) rn
 from emp
 )
 where rn<=3
+```
+## 10 Select LAST 7 records from a table
+```sql
+//15 rows in total
+//last 7 rows
+select emp.*, rownum, rowid from emp 
+minus
+select emp.*, rownum, rowid from emp 
+where rownum<=(select count(*)-7 from emp)
+//first 8 rows
+select emp.*, rownum, rowid from emp 
+where rownum<=8;
 ```
 # dup
 ##  6 select/delete duplicate rows from the EMP table
@@ -100,7 +112,7 @@ where cnt>=2;
 ## 8 Display the employees where "more than 2 employees under a manager"
 ```sql
 select * from 
-(select emp.*, count(mgr) over (partition by mgr) as cnt from emp)
+(select emp.*, count(empno) over (partition by mgr) as cnt from emp)
 where cnt>=2
 
 //manager with its employee count
@@ -123,18 +135,6 @@ select * from
 (select empno, ename, sal, rownum rn from emp order by empno)
 where mod(rn, 2)!=0
 order by rn
-```
-## 10 Select LAST 7 records from a table
-```sql
-//15 rows in total
-//last 7 rows
-select emp.*, rownum, rowid from emp 
-minus
-select emp.*, rownum, rowid from emp 
-where rownum<=(select count(*)-7 from emp)
-//first 8 rows
-select emp.*, rownum, rowid from emp 
-where rownum<=8;
 ```
 ##  11 find the employees who are working in the company for the past 5 years.
 ```sql
