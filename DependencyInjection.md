@@ -766,7 +766,9 @@ return new PropertySourcesPlaceholderConfigurer(); }
 
 <context:annotation-config/>
 Or<context:component-scan/>
+
 ```
+![enter image description here](https://user-images.githubusercontent.com/32177380/39000909-0ffdc29e-43c3-11e8-9673-b3b9a9463abf.jpg)
 ###   The use phase
 example
 ```java
