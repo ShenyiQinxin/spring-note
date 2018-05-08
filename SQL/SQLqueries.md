@@ -88,6 +88,11 @@ select min(rowid) from emp group by empno
 delete from emp
 where rowid not in
 (select min(rowid) from emp group by empno
+
+select empno, ename, count(*)
+from emp 
+group by empno, ename
+having count(*)>1
 ```
 ## 7 select only those employee information who are earning the same salary?
 - 1st
@@ -150,4 +155,40 @@ where empno = (
 select max(empno) from emp
 )
 ```
-## add more from trick questions
+## max salary n dept name from each department
+```sql
+select d.dname, nvl(max(e.sal),0) salary
+from emp e full outer join dept d
+on e.deptno = d.deptno
+group by d.dname
+```
+## the nth highest salary among all Employees
+```sql
+select * from 
+(select emp.*, row_number() over (order by sal desc) rn from emp) where rn<=7
+```
+```sql
+select * from 
+(select emp.*, dense_rank() over (order by sal desc) rn from emp) where rn<=7
+```
+## find top10 employees with Odd number as Employee ID
+```sql
+select empno from emp where mod(empno,2)=1 and rownum<=10
+```
+## get the Quarter from date
+```sql
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'Q') as quarter from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'MONTH') as quarter from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'YEAR') as quarter from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'DAY') as quarter from dual;
+```
+## find all employee whose name contains the word "Rich", regardless of case
+```sql
+select * from emp where lower(ename) like '%ing%'
+```
+## print a comma separated list of emp names , listed in the order of hiredate, group them by the sal
+```sql
+select sal, listagg(ename, ',') within group (order by hiredate) as emps
+from emp
+group by sal
+```
