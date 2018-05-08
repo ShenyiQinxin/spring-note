@@ -1,18 +1,20 @@
 ## OOP design concepts
 - methods defined in a class represent the **behavior** that instances of the class will have during **runtime**. this behavior is invoked by sending **messages**(calling methods) to that object.
 - **associations**
-	- **Dependency** association (arrow points to dependencies i.e. vehicle)
-		- i.e. class Driver{Vehicle}
+	- **Dependency** association ( `Driver --->Vehicle`)
+		- i.e. `class Driver{Vehicle}`
 		- **driver** depends on **vehicle**
-	- **Composition** association (a solid diamond)
-		- i.e. class Vehicle{Engine myEngine;} 
+	- **Composition** association (`Vehicle<solid>---->Engine`)
+		- i.e. `class Vehicle{Engine myEngine;}` 
 		- **Vehicle** owns an **Engine**
-	- **Aggregation** association (an empty diamond)
+	- **Aggregation** association (`SpanishCouse <empty>---> Student`)
 		- i.e. class SpanishCourse{Student}
 		- **SpanishCourse** has many **Student**, but it does not own any Student
-## best practice
+## Software Design best practice
 - keey diagrams simple
 - consider the behavior not the physical relationships
+i.e. `Customer --stopNewspaperSubscription()--> NewspaperCompany`
+rather than `NewspaperCompany--->Customer` has-A relationship
 - class names should be nouns based on their intent
 ## principles
 - single responsibility
