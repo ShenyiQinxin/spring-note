@@ -48,7 +48,7 @@ select e1.sal from emp e1 inner join emp e2 on e1.sal<e2.sal
 ```sql
 select * from 
 (
-select emp.*, dense_rank() over (order by nvl(sal,0) desc) rn from emp 
+select emp.*, dense_rank() over (order by sal desc) rn from emp 
 )
 where rn<=5;
 ```
