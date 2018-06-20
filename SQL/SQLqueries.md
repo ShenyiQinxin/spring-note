@@ -178,9 +178,9 @@ select empno from emp where mod(empno,2)=1 and rownum<=10
 ## get the Quarter from date
 ```sql
 select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'Q') as quarter from dual;
-select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'MONTH') as quarter from dual;
-select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'YEAR') as quarter from dual;
-select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'DAY') as quarter from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'MONTH') as month from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'YEAR') as year from dual;
+select to_char(to_date('12/31/2016', 'MM/DD/YYYY'), 'DAY') as day from dual;
 ```
 ## find all employee whose name contains the word "Rich", regardless of case
 ```sql
