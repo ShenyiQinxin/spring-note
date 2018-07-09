@@ -1,4 +1,5 @@
-#OOAD
+
+# OOAD
 > object oriented analysis and design models a **system** as **a group of interacting objects**. 
 > each object represents an entity of interest in the system being modeled.
 > each object is characterized by its
@@ -6,6 +7,7 @@
 >  2. state
 >  3. behavior
 > models can be created to illustrate the static structure, dynamic behavior and run-time deployment of these collaborating objects.
+
 
 ## objects 
 > state + behavior, objects are runtime feature of an OO system.
@@ -18,7 +20,7 @@
 - provides metadata for attributes : variable type and initial values
 - provides signature and implementation for methods.
 
-##abstract classes
+## abstract classes
 an abstract class is just like a typical class (attributes, methods, constructors (for subclasses to use)), but contains >=0 abstract methods, hence never could be instantiated.
 
 ##interfaces
@@ -28,7 +30,7 @@ An interface is a contract of its implementation classes.
 3. no constructor.
 4. subinterface could inherit uperinterfaces (multiple inheritance).
 
-#OO features:
+# OO features:
 ### abstraction
 - according to system requirements, an object is created in a simplified view and ignore irrelevant details. for instance, to drive a car, we only care the data on dashboard and how to use the auto parts for driving. we do not need to know how a car works under the hood.
 
@@ -67,7 +69,7 @@ Vehicle bike = new Bike();
 
 
 
-#UML unified modeling language
+# UML unified modeling language
 - structure diagram - class diagram - structure of classes and relations
 - behavior diagram - sequence diagram -interactions 
 
