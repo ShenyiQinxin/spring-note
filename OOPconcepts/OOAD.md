@@ -85,6 +85,9 @@ Car is a specialization of Vehicle
 ```java
 Car class is a realization of Lockable interface
 ```
+## Associations
+one class uses the service from another class
+
 ### Dependency
 ```java
 Engine <---- Car
@@ -93,18 +96,46 @@ Car{
 	Engine engine;
 }
 ```
-### Association
-one class uses the service from another class
-
 ### Aggregation
 ```java
-Department has-a Teacher, but Teacher could exists without Department
-Department <>____Teacher
+Department has-a Teacher, 
+but Teacher could exists without Department
+Department <empty>____>Teacher
 ```
 ### Composition
 ```java
-House is-composed-of-a Room, so Room could not survive without House
-House <>solid_____Room
+House is-composed-of-a Room, 
+so Room could not survive without House
+House <solid>_____>Room
 ```
-# Design Principles
-##
+# Design Principles SOLID
+## single responsibility
+a class/module has only one responsibility
+```java
+class Car{name, model, year}
+but wont includ CarDAO CRUD operations 
+```
+## open/close principle
+open for extension & closed for modification
+once developed and tested a module, we should not modify it anymore, instead we could extend it in terms of changing.
+changes in one module might affect other functionalities so that it may bring additional work/risks.
+
+## Liskov substitution principle
+```java
+Car must be substitutable for Vehicle, meaning Car can be used as a Vehicle
+this substitution must be from behavior point of view, called strong behavioral substyping
+```
+## interface segregation principle
+client should not depend on interfaces that they do not use,
+use separated interfaces to decouple concerns, instead of using a fat class as a dependency
+```java
+Mechanic --->IRepairable
+Dealer --->ISellable
+Car --implement--|>IRepairable, ISellable
+not
+Mechanic --->ICar
+```
+## Dependency Inversion Principle
+low-level module depends on high-level module, 
+both depends on abstraction. Details depend on abstraction.
+it means depend on abstract classes/interfaces that dont change as often as concrete classes.
