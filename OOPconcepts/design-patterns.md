@@ -1,4 +1,212 @@
 # Design Patterns
+- Factory Method:
+```java
+ public static void main(String[] args) {
+      ShapeFactory shapeFactory = new ShapeFactory();
+
+      //get an object of Circle and call its draw method.
+      Shape shape1 = shapeFactory.getShape("CIRCLE");
+
+      //call draw method of Circle
+      shape1.draw();
+
+      //get an object of Rectangle and call its draw method.
+      Shape shape2 = shapeFactory.getShape("RECTANGLE");
+
+      //call draw method of Rectangle
+      shape2.draw();
+
+      //get an object of Square and call its draw method.
+      Shape shape3 = shapeFactory.getShape("SQUARE");
+
+      //call draw method of square
+      shape3.draw();
+}
+```
+- Abstract Factory
+```java
+public static void main(String[] args) {
+
+      //get shape factory
+      AbstractFactory shapeFactory = FactoryProducer.getFactory("SHAPE");
+
+      //get an object of Shape Circle
+      Shape shape1 = shapeFactory.getShape("CIRCLE");
+
+      //call draw method of Shape Circle
+      shape1.draw();
+
+      //get an object of Shape Rectangle
+      Shape shape2 = shapeFactory.getShape("RECTANGLE");
+
+      //call draw method of Shape Rectangle
+      shape2.draw();
+      
+      //get an object of Shape Square 
+      Shape shape3 = shapeFactory.getShape("SQUARE");
+
+      //call draw method of Shape Square
+      shape3.draw();
+
+      //get color factory
+      AbstractFactory colorFactory = FactoryProducer.getFactory("COLOR");
+
+      //get an object of Color Red
+      Color color1 = colorFactory.getColor("RED");
+
+      //call fill method of Red
+      color1.fill();
+
+      //get an object of Color Green
+      Color color2 = colorFactory.getColor("Green");
+
+      //call fill method of Green
+      color2.fill();
+
+      //get an object of Color Blue
+      Color color3 = colorFactory.getColor("BLUE");
+
+      //call fill method of Color Blue
+      color3.fill();
+   }
+```
+- Builder
+```java
+public static void main(String[] args) {
+   
+      MealBuilder mealBuilder = new MealBuilder();
+
+      Meal vegMeal = mealBuilder.prepareVegMeal();
+      System.out.println("Veg Meal");
+      vegMeal.showItems();
+      System.out.println("Total Cost: " + vegMeal.getCost());
+
+      Meal nonVegMeal = mealBuilder.prepareNonVegMeal();
+      System.out.println("\n\nNon-Veg Meal");
+      nonVegMeal.showItems();
+      System.out.println("Total Cost: " + nonVegMeal.getCost());
+   }
+
+```
+- Singleton
+```java
+public static void main(String[] args) {
+
+      //illegal construct
+      //Compile Time Error: The constructor SingleObject() is not visible
+      //SingleObject object = new SingleObject();
+
+      //Get the only object available
+      SingleObject object = SingleObject.getInstance();
+
+      //show the message
+      object.showMessage();
+   }
+```
+- Decorator
+```java
+ public static void main(String[] args) {
+
+      Shape circle = new Circle();
+
+      Shape redCircle = new RedShapeDecorator(new Circle());
+
+      Shape redRectangle = new RedShapeDecorator(new Rectangle());
+      System.out.println("Circle with normal border");
+      circle.draw();
+
+      System.out.println("\nCircle of red border");
+      redCircle.draw();
+
+      System.out.println("\nRectangle of red border");
+      redRectangle.draw();
+   }
+```
+- Composite
+```java
+public static void main(String[] args) {
+   
+      Employee CEO = new Employee("John","CEO", 30000);
+
+      Employee headSales = new Employee("Robert","Head Sales", 20000);
+
+      Employee headMarketing = new Employee("Michel","Head Marketing", 20000);
+
+      Employee clerk1 = new Employee("Laura","Marketing", 10000);
+      Employee clerk2 = new Employee("Bob","Marketing", 10000);
+
+      Employee salesExecutive1 = new Employee("Richard","Sales", 10000);
+      Employee salesExecutive2 = new Employee("Rob","Sales", 10000);
+
+      CEO.add(headSales);
+      CEO.add(headMarketing);
+
+      headSales.add(salesExecutive1);
+      headSales.add(salesExecutive2);
+
+      headMarketing.add(clerk1);
+      headMarketing.add(clerk2);
+
+      //print all employees of the organization
+      System.out.println(CEO); 
+      
+      for (Employee headEmployee : CEO.getSubordinates()) {
+         System.out.println(headEmployee);
+         
+         for (Employee employee : headEmployee.getSubordinates()) {
+            System.out.println(employee);
+         }
+      }		
+   }
+```
+- Adapter
+```java
+ public static void main(String[] args) {
+      AudioPlayer audioPlayer = new AudioPlayer();
+
+      audioPlayer.play("mp3", "beyond the horizon.mp3");
+      audioPlayer.play("mp4", "alone.mp4");
+      audioPlayer.play("vlc", "far far away.vlc");
+      audioPlayer.play("avi", "mind me.avi");
+   }
+```
+- Bridge
+```java
+public static void main(String[] args) {
+      Shape redCircle = new Circle(100,100, 10, new RedCircle());
+      Shape greenCircle = new Circle(100,100, 10, new GreenCircle());
+
+      redCircle.draw();
+      greenCircle.draw();
+   }
+```
+- Proxy
+```java
+public static void main(String[] args) {
+      Image image = new ProxyImage("test_10mb.jpg");
+
+      //image will be loaded from disk
+      image.display(); 
+      System.out.println("");
+      
+      //image will not be loaded from disk
+      image.display(); 	
+   }
+```
+- Strategy
+```java
+ public static void main(String[] args) {
+      Context context = new Context(new OperationAdd());		
+      System.out.println("10 + 5 = " + context.executeStrategy(10, 5));
+
+      context = new Context(new OperationSubstract());		
+      System.out.println("10 - 5 = " + context.executeStrategy(10, 5));
+
+      context = new Context(new OperationMultiply());		
+      System.out.println("10 * 5 = " + context.executeStrategy(10, 5));
+   }
+```
+
 ## Creational
 ### Factory Method
 FactoryIF's concrete class ShapeFactory creates various ShapeIF objects (Rectangle, Circle, Square).
