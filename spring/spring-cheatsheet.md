@@ -405,7 +405,122 @@ public void deleteItem(@PathVariable("orderId") long orderId, @PathVariable("ite
 	orderService.findOrderById(orderId.deleteItem(itemId));
 }
 ```
+## Consuming a RESTful Web Service
+### create a domain class to contain data from producer
+### consume resource URL using RestTemplate in SpringBootApplication
+```java
+//Jackson JSON processing lib, any type not this type is ignored
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class Quote{
+	private String type;
+	private Value value;
+	//getters, setters, toString
+}
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class Value{
+	//...
+}
 
+@SpringBootApplication
+public class Application{
+	//main() SpringApplication.run(Application.class);
+	@Bean
+	public RestTemplate restTemplate(RestTemplateBuilder builder){
+		return builder.build();
+	}
+
+	@Bean
+	public QuoterestConsumer(RestTemplate restTemplate) throws Exception(){
+		
+			Quote quote = restTemplate.getForObject(url, Quote.class);
+			return quote;
+		
+	}
+}
+```
+### RestTemplate methods for HTTP methods
+```java
+//get
+OrderItem[] items = template.getForObject(uri, OrderItem[].class, "1");
+//post
+OrderItem item = template.postForLocation(uri, item, "1");
+//put
+//modify item
+item.setAmount(2);
+//put/update it to itemLocation
+template.put(itemLocation, item);
+//delete
+template.delete(itemLocation);
+```
+
+## Exceptions in RESTful WS
+Normally any unhandled exception thrown when processing a web-request causes the server to return an HTTP 500 response. 
+### annotate a customized exception with @ResponseStatus
+```java
+@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No such Order")  // 404
+ public class OrderNotFoundException extends RuntimeException {
+     // ...
+ }
+ //use the exception in a controller method
+ @RequestMapping(value="/orders/{id}", method=GET)
+ public String showOrder(@PathVariable("id") long id, Model model) {
+     Order order = orderRepository.findOrderById(id);
+
+     if (order == null) throw new OrderNotFoundException(id);
+
+     model.addAttribute(order);
+     return "orderDetail";
+ }
+```
+### for existing exceptions, annotate @ExceptionHandler with @ResponseStatus on a method on Controller
+
+```java
+//@Controller
+@ControllerAdvice
+class GlobalControllerExceptionHandler {
+    @ResponseStatus(HttpStatus.CONFLICT)  // 409
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public void handleConflict() {
+        // Nothing to do
+    }
+}
+```
+
+## mixing put/post form controller and RESTful controller
+```java
+@GetMapping(path="/orders/{id}", produces="application/json")
+@ResponseStatus(HttpStatus.OK)
+public @ResponseBody Order getOrder(@PathVariable("id") long id){
+	return orderService.findOrderById(id);
+}
+
+@GetMapping(path="/orders/{id}")
+public String getOrder(Model model, @PathVariable("id") long id){
+	//call the RESTful method
+	model.addAttribute(getOrder(id));
+	return "orderDetails";
+}
+```
+## HATEOAS
+hypermedia as the engine of application state
+- no prior knowledge about how to interact with a particular server
+- links change as state/attributes change
+```java
+@Controller
+@EnableHypermediaSupport(type=HypermediaType.HAL)
+public class OrderController{
+	//get mapping handler method
+	@GetMapping(path="/orders/{id}")
+	public @ResponseBody Resource<Order> getOrder(@PathVariable("id") long id){
+	Link link = ControllerLinkBuilder.linkTo(AccountController.class)
+	.slash(accountId)
+	.slash("transfer")
+	.withRel("transfer");
+	return new Resource<Order>(orderService.findOrderById(id), link);
+}
+	
+}
+```
 # Microservices
 
 #JDBC
