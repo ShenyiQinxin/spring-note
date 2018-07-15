@@ -372,6 +372,40 @@ return new HttpEntity<Order>(order, httpHeaders);
 String templateUrl="http://store.spring.io.orders/{orderId}/items/{itemId}";
 URI location = UriComponentsBuilder.fromHttpUrl(templateUrl).buildAndExpand("123","itemA").toUri();
 ```
+
+## Demos for GET/POST/PUT/DELETE
+```java
+@GetMapping(path="/orders/{id}")
+//@ResponseStatus(HttpStatus.OK)
+public @ResponseBody Order getOrder(@PathVariable("id") long id){
+	return orderService.findOrderById(id);
+}
+
+@PostMapping(path="/orders/{id}/items")
+@ResponseStatus(HttpStatus.CREATED)//201
+public ResponseEntity<Void> createItem(@PathVariable("id") long id, @RequestBody Item newItem){
+	//orderService add newItem from the requestBody into repo
+	orderService.findOrderById(id).addItem(newItem);
+
+	URI location = ServletUriComponentsBuilder
+	.fromCurrentRequestUri().path("items/{itemId}").buildAndExpand(newItem.getId()).toUri();
+
+	return ResponseEntity.created(location).build();
+}
+
+@PutMapping(path="/orders/{orderId}/items/{itemId}")
+@ResponseStatus(HttpStatus.NO_CONTENT)//204
+public void updateItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") String itemId, @RequestBody Item item){
+	orderService.findOrderById(orderId.updateItem(itemId, item));
+}
+
+@DeleteMapping(path="/orders/{orderId}/items/{itemId}")
+@ResponseStatus(HttpStatus.NO_CONTENT)//204
+public void deleteItem(@PathVariable("orderId") long orderId, @PathVariable("itemId") String itemId){
+	orderService.findOrderById(orderId.deleteItem(itemId));
+}
+```
+
 # Microservices
 
 #JDBC
