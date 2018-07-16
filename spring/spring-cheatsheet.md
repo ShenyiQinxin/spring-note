@@ -299,6 +299,17 @@ public class RootConfig{
 ResponseEntity.ok().contentType(MediaType.TEXT_PLAIN).body("hello world")
 ```
 
+## What is idempotent
+A repetively operation without different outcomes.
+POST, PATCH are not
+
+## safe operations
+do not modify resources
+PUT, POST, DELETE, PATCH are not.
+
+## secure REST
+we can implement security in RESTful web service by using transfer layer security TLS, auth token security. TLS could be setup in Tomcat. TLS encrypts communication, HTTPS to authenticate servers.
+
 ## REST principles
 1. resources are exposed through URIs and nouns
 2. http methods for operations `GET, PUT, POST, DELETE to /orders/123`
@@ -522,8 +533,153 @@ public class OrderController{
 }
 ```
 # Microservices
+## How to develop microservices
+- setup services using Spring Boot ("spring-cloud-starter", "spring-cloud-starter-eureka", "spring-cloud-starter-web" etc.)
+- producer service using RestController 
+- consumer service using RestTemplate with client-side load balancing Ribbon determines the best available service to use.
+- with service discovery Eureka return the URL of all available instances.
+ 
 
+
+## To be more precise:
+- Run a "Discory Service" using Eureka
+```java
+@SpringBootApplication
+@EnableEurekaServer
+public class EurekaApplication(){
+	//SpringApplication.run()
+}
+
+application.yml
+server:
+	port:8761
+eureka:
+	instance:
+		hostname:localhost
+	client:
+		registerWithEureka:false
+		fetchRegistry:false
+
+pom.xml
+"spring-cloud-starter-eureka-server"
+```
+- Run a microservice as "producer" and register its logic service name with the "Discory Service" 
+```java
+@SpringBootApplication
+@EnableDiscoveryClient//for both consumer and producer application
+public class AccountsApplication(){
+	//SpringApplication.run()
+}
+
+application.yml
+spring:
+	application://logic service name
+		name:accounts-microservice
+eureka:
+	client:
+		serviceUrl://eureka server URLs
+			defaultZone:http://localhost:8761/eureka/
+```
+- Run a consumer to consume service from producer using RestTemplate
+```java
+@SpringBootApplication
+@EnableDiscoveryClient//for both consumer and producer application
+public class FrontEndApplication(){
+	//SpringApplication.run()
+	@Bean @LoadBalanced //Ribbon
+	public RestTemplate restTemplate(RestTemplateBuilder builder){
+		return builder.build();
+	}
+
+}
+
+@Service
+public class RemoteAccountManager implements AccountService{
+	@Autowired @LoadBalanced //
+	RestTemplate restTemplate;
+
+	public Account findAccount(String id){
+		return restTemplate.getForObject("http://accounts-microservice/accounts/{id}", Account.class, id);
+	}
+}
+```
 #JDBC
+## JDBC steps
+```java
+//open connection and participate in transaction
+Connection conn=datasource.getConnection();
+//prepare sql statement
+PreparedStatement ps = conn.prepareStatement(sql);
+//execute query to get result set
+ResultSet rs=ps.executeQuery();
+//*(we do this) for each resutlt set, perform certain operation
+while(rs.next()){
+	list.add(new Person(...));
+}
+conn.close();
+//hanlde exception
+try..catch
+//release connection
+```
+
+## `JdbcTemplate`
+handle everything else except 
+
+"for each resultSet, do the work" 
+
+and "replace exceptions by a runtime exception - SQLException"
+
+thread safe
+
+### How JdbcTemplate works
+```java
+//in a repository class
+public class JdbcCustomerRepository {
+	
+	// JdbcTemplate instance createe;
+
+	//Integer, Date, Long, String,...
+	jdbcTemplate.queryForObject(sql, Integer.class);
+	jdbcTemplate.queryForMap(sql, Integer.class);
+	jdbcTemplate.queryForList(sql, Integer.class);
+	//query an integer, i.e. count(*), age binds to first ? and nationality binds to second ?
+	jdbcTemplate.queryForObject(sql, Integer.class, age, nationality.toString());
+
+	//query domain object
+	//for single row 
+	Person singlePerson = jdbcTemplate.queryForObject(sql, new PersonMapper(), id);
+	//for multiple rows
+	List<Person> multiPerson = jdbcTemplate.query(sql, new PersonMapper());
+	class PersonMapper implements RowMapper<Person>{
+		public Person mapRow(ResultSet rs, int rowNum) throws SQLException{
+			return new Person(rs.getString("first_name"), rs.getString("last_name"));
+		}
+	}
+
+	//query but no return object, instead streaming rows to a file/xml
+	public void generateReport(final PrintWriter out){
+		jdbcTemplate.query(sql, 
+			(RowCallbackHandler)(rs)->
+			{out.write(rs.getString("customer"))}, 
+			2009);
+	
+	//process entire resultset at once
+	Order order = jdbcTemplate.query(
+		sql,
+		(ResultSetExtractor<Order>)(rs) -> {
+			Order order = null;
+			while(rs.next()){
+				if(order==null){
+					order = new Order(rs.getLong("ID"), rs.getString("NAME"));
+				}
+				order.addItem(mapItem(rs));
+			}
+			return order;
+		}
+		);
+}
+```
+
 #JPA
 #Data
 #Security
