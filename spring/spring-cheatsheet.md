@@ -627,7 +627,7 @@ handle everything else except
 
 "for each resultSet, do the work" 
 
-and "replace exceptions by a runtime exception - SQLException"
+and "replace SQLExceptions by runtime exceptions - DataAccessExceptions"
 
 thread safe
 
@@ -646,17 +646,19 @@ public class JdbcCustomerRepository {
 	jdbcTemplate.queryForObject(sql, Integer.class, age, nationality.toString());
 
 	//query domain object
+	class PersonMapper implements RowMapper<Person>{
+		public Person mapRow(ResultSet rs, int rowNum) throws SQLException{
+			//sql = "select first_name, last_name from person"
+			return new Person(rs.getString("first_name"), rs.getString("last_name"));
+		}
+	}
 	//for single row 
 	Person singlePerson = jdbcTemplate.queryForObject(sql, new PersonMapper(), id);
 	//for multiple rows
 	List<Person> multiPerson = jdbcTemplate.query(sql, new PersonMapper());
-	class PersonMapper implements RowMapper<Person>{
-		public Person mapRow(ResultSet rs, int rowNum) throws SQLException{
-			return new Person(rs.getString("first_name"), rs.getString("last_name"));
-		}
-	}
+	
 
-	//query but no return object, instead streaming rows to a file/xml
+	//query but no return object, instead streaming mutiple rows to a file/xml
 	public void generateReport(final PrintWriter out){
 		jdbcTemplate.query(sql, 
 			(RowCallbackHandler)(rs)->
@@ -664,6 +666,7 @@ public class JdbcCustomerRepository {
 			2009);
 	
 	//process entire resultset at once
+	//ResultSet with multiple rows maps to a single object
 	Order order = jdbcTemplate.query(
 		sql,
 		(ResultSetExtractor<Order>)(rs) -> {
@@ -675,11 +678,64 @@ public class JdbcCustomerRepository {
 				order.addItem(mapItem(rs));
 			}
 			return order;
-		}
+		},
+		number	
 		);
+
+	//insert and update
+	//sql = "insert into person(id, name) values(?,?,?)"
+	//sql = "update person set id=? where name=?"
+	jdbcTemplate.update(sql, person.getId(), person.getName());
 }
 ```
+# Transaction
+## What is transaction?
+For the same connection, it is reused. Within one connection, there are multiple transactions, each of the transaction is atomic and runs unit-of-work.
 
+## What is Transaction ACID principles?
+- Atomic : sucess or fail
+- Consistent : integrity constraints not violated
+- Isolated :transactions are isolated in some levels 
+(READ_UNCOMMITTED, READ_COMMITTED, REPEATABLE_READ, SERIALIZABLE)
+- Durale : commit is permanent
+
+## What is propergation?
+In the single transaction, when method1 running in the transaction, method2 is called, how would method2 transaction do? should method2 creates a new transaction and suspend transaction of method1, or should method2 join method1 transaction?
+REQUIRED: if existing, new method join in existing transaction
+REQUIRES_NEW: if existing, suspend the existing one, and create a new transaction.
+
+## Transction, ORM/JDBC and Spring
+- JDBC, ORMs, JTA, JMS, etc handle transaction
+- usually the transaction demarcation is between get connection/transaction and commit();
+
+>Spring transaction unites different APIs' transaction.
+>by declare a PlatformTransactionManager bean which have severl implementations for different APIs' transactions
+
+## How to use Spring transaction
+```java
+//in configuration implements PlatformTransactionManger bean
+
+//@Configuration @EnableTransactionManagement
+
+@Bean
+public PlatformTransactionManger transactionManager(DataSource datasource){
+	return new DataSourceTransactionManager(dataSource);
+}
+
+//annotate @Transactional in class/method level where the query/database interaction works
+//method level overrides class level transaction
+@Transactional 
+public class RewardNetworkImpl implements RewardNetwork{
+	@Transactional(timeout=45, 
+		isolation=Isolation.READ_COMMITTED, 
+		propagation=Propagation.REQUIRES_NEW,
+		rollbackFor=MyCheckedException.class, noRollbackFor={JmsException.class, MailException.class})
+	public RewardConfirmation rewardAccountFor(Dining d){
+		//ACID work
+	}
+}
+
+```
 #JPA
 #Data
 #Security
