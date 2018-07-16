@@ -612,7 +612,7 @@ public class RemoteAccountManager implements AccountService{
 	}
 }
 ```
-#JDBC
+# JDBC
 ## JDBC steps
 ```java
 //open connection and participate in transaction
@@ -794,7 +794,7 @@ public final class TranserServiceTest{
 				  .addScript("classpath:/testfiles/test-data.sql").build();
 }
 ```
-#JPA
+# JPA
 
 List<Entity> --EntityManager-- tables
 ```java
@@ -860,6 +860,7 @@ persist(Object), remove(Object), find(Class entity, Object pk), Query createQuer
 @Table(name= "T_CUSTOMER")
 public  class  Customer  { 
 	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Column(name="cust_id") private  Long  id;
 
 	@Column(name="first_name") private  String  firstName;
@@ -904,9 +905,79 @@ public  class  Customer  {
 }
 ```
 
-#Data
+# Data
+## Steps to create repository using Spring Data
+1. Annotate domain class
+2. define repository as an interface
+3. access repository by `@Autowired CustomerRepository` in configuration file
 
-#Security
+> spring implement the interface Repository<T,K> at run-time, auto-generate CRUD methods.
+```java
+//1. Annotate domain class
+@Entity  
+@Table(name= "T_CUSTOMER")
+public  class  Customer  { 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="cust_id") private  Long  id;
+	//...
+}
+
+//2. define repository as an interface
+public interface Repository<T, ID>{}
+
+//internally, spring data does this step
+public interface CrudRepository<T, ID extends Serializable> extends Repository<T, ID>{
+	//save, findOne, fineAll, delete, etc methods
+}
+
+//we also could define CrudRepository ...
+public interface CustomerRepository extends CrudRepository<Cusomer, Long>{
+	@Query("sql")
+	public List<Customer> findInvalidEmails();
+}
+public interface CustomerRepository extends Repository<Customer, Long>{
+	//...
+}
+
+//3. access repository by `@Autowired CustomerRepository` in configuration
+@Configuration
+@EnabelJpaRepositories(basePackages="com.acme.repository")
+public class CustomerConfig{
+	@Autowired
+	public CustomerRepository customerRepository;
+
+	@Bean
+	public CustomerService customerService(){
+		return new CustomerService(customerRepository);
+	}
+}
+```
+
+# Security
+```java
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter{
+	protected void configure(HttpSecurity http) throws Exception{
+		http.authorizeRequests()
+		.antMatchers("/css1/**").permitAll();
+		.antMatchers("/css2/**").hasRole("ADMIN")
+		.antMatchers("/css3/**").authenticated();
+		//specific match first
+	}
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception{
+		auth.inMemoryAuthentication()
+			.withUser("huig").password("huig").roles("GENERAL").and()
+			.withUser("huig1").password("huig1").roles("ADMIN").and()
+			.withUser("huig2").password("huig2").roles("SUPPORT");
+
+
+	}
+}
+```
 #AOP
 #IoC
 ```java
