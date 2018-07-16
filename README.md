@@ -3,8 +3,14 @@ This is a repository for my Spring certification stuff initially.
 After cleared Spring certification, it becomes a study note.
 
 # Catalog
-## Core Spring 
-## SQL
-## Database design
-## Java Algorithms
-## OOP Design 
+## Spring 
+## SQL 
+- queries
+- grammers
+- Database Design
+## Java 
+- core Java Grammer 
+- Algorithms 
+## OOP
+- Design Patterns
+- OOP concepts
