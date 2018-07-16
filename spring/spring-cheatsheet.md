@@ -795,7 +795,117 @@ public final class TranserServiceTest{
 }
 ```
 #JPA
+
+List<Entity> --EntityManager-- tables
+```java
+//JPA 
+entityManager.
+persist(Object), remove(Object), find(Class entity, Object pk), Query createQuery(String jpql), flush()
+```
+
+## Steps to using JPA with Spring
+1. Define an EntityManagerFactory bean (LocalContainer, JNDI)
+2. Define a DataSrouce bean (embedded or DBMS)
+3. Define a TransactionManager bean (JPA or JTA)
+4. Define Mapping metaData
+5. Define DAO
+
+## DataSource, EntityManagerFactory, TransactionManager, DAO
+```java
+@Bean
+public DataSource dataSource(){
+	//...
+}
+
+@Bean
+public LocalContainerEntityManagerFactoryBean entityManagerFactory(){
+	return new LocalContainerEntityManagerFactoryBean().setDataSource(dataSource);
+}
+
+@Bean
+public PlatformTransactionManger transactionManager(EntityManagerFactory emf){
+	return new JpaTransactionManger(emf);
+}
+
+@Bean
+public CustomerRepository jpaCustomerRepository(){
+	return new JpaCustomerRepository();
+}
+
+//DAO
+public class JpaCustomerRepository implements CustomerRepository{
+	private EntityManager entityManager;
+
+	@PersistenceContext
+	public void setEntityManager(EntityManager entityManager){
+		this.entityManager = entityManager;
+	}
+
+	public Customer findById(long orderId){
+		return entityManager.find(Customer.class, orderId);
+	}
+}
+
+/*
+//JPA 
+entityManager.
+persist(Object), remove(Object), find(Class entity, Object pk), Query createQuery(String jpql), flush()
+*/
+```
+
+## JPA Mapping
+```java
+//metadata for mapping classes/fields to databases tables/columns
+@Entity  
+@Table(name= "T_CUSTOMER")
+public  class  Customer  { 
+	@Id
+	@Column(name="cust_id") private  Long  id;
+
+	@Column(name="first_name") private  String  firstName;
+
+	@Transient  //do not persist into database
+	private  User  curentUser;
+
+	//relationship mapping
+	@OneToMany
+	@JoinColumn(name="fk_id_address")
+	private List<Address> addresses;
+}
+
+//uni-directional
+@Entity
+@Table(name="T_ADDRESS")
+public class Address{
+	@Id private Long id;
+	private String street;
+	private String city;
+}
+
+//bi-directional
+@Entity
+@Table(name="T_ADDRESS")
+public class Address{
+	@ManyToOne
+	@JoinColumn(name=fk_cid)
+	@Id private Long id;
+	private String street;
+	private String city;
+}
+
+@Entity  
+@Table(name= "T_CUSTOMER")
+public  class  Customer  { 
+	@Id
+	@Column(name="cust_id") private  Long  id;
+
+	@OneToMany(mappedBy="id")
+	private List<Address> addresses;
+}
+```
+
 #Data
+
 #Security
 #AOP
 #IoC
