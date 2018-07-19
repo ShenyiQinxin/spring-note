@@ -508,12 +508,13 @@ class GlobalControllerExceptionHandler {
 
 ## mixing put/post form controller and RESTful controller
 ```java
-@GetMapping(path="/orders/{id}", produces="application/json")
+@GetMapping(path="/orders/{id}+json", produces="application/json")
 @ResponseStatus(HttpStatus.OK)
 public @ResponseBody Order getOrder(@PathVariable("id") long id){
 	return orderService.findOrderById(id);
 }
 
+//action=id, <input name="account".../>
 @GetMapping(path="/orders/{id}")
 public String getOrder(Model model, @PathVariable("id") long id){
 	//call the RESTful method
