@@ -1,17 +1,129 @@
-# Order of one column
-
-
-##  1 the number of rows in a table without using COUNT function.
+# Fetch the count of employees working in project 'P1'.
 ```sql
-select max(rownum ) from emp;
+select count(*) from employeeSalary where project = 'P1';
 ```
-## 2.1 The second highest salary among all Employees
+
+# Fetch employee names having salary greater than or equal to 5000 and less than or equal 10000.
+```sql
+
+select fullname from EmployeeDetails where empid in 
+(select empid from employeeSalary where salary between 5000 and 10000);
+
+select fullname from EmployeeDetails ed inner join EmployeeSalary es using empid
+where employeeSalary between 5000 and 10000;
+```
+
+# Fetch project-wise count of employees sorted by project's count in descending order
+```sql
+select project, count(empid) project_count from employeeSalary
+group by project
+order by project_count;
+```
+
+# Fetch only the first name(string before space) from the FullName column of EmployeeDetails table.
+```sql
+select substr(fullname, 1, instr(fullname,' ')) from EmployeeDetails
+```
+
+# fetch employee names and salary records. Return employee details even if the salary record is not present for the employee.
+```sql
+select es.salary, ed.fullname
+from employeeSalary es left out join EmployeeDetails ed
+using empid
+```
+# fetch all the Employees who are also managers from EmployeeDetails table
+```sql
+select e.empid
+from EmployeeDetails e inner join EmployeeDetails m on e.managerid= m.empid
+```
+
+# Fetch all employee records from EmployeeDetails table who have a salary record in EmployeeSalary table.
+```sql
+select * from EmployeeDetails where empid in (select empid from employeeSalary where employeeSalary!=null)
+
+select * from EmployeeDetails e where exists (select * from employeeSalary s where e.empid = s.empid);
+
+```
+
+# fetch duplicate records from a table.
+```sql
+select * from employeeSalary where empid not in (select min(rowid) from employeeSalary)
+```
+
+# remove duplicates from a table without using temporary table
+```sql
+delete from employeeSalary where empid in (select empid from employeeSalary
+group by empid having count(empid)>1); 
+```
+
+# fetch only odd rows from table.
+```sql
+select * from (select employeeSalary.*,rowmun rn from employeeSalary)
+where mod(rn,2)==1
+```
+# create a new table with data and structure copied from another table
+```sql
+create table new_table as 
+	select * from employeeSalary;
+```
+
+# create an empty table with same structure as some other table.
+```sql
+create table new_table as select * from employeeSalary where 1=2;
+```
+
+# fetch common records between two tables.
+```sql
+select * from employeeSalary1
+intersect
+select * from employeeSalary2
+```
+# fetch records that are present in one table but not in another table.
+```sql
+select * from employeeSalary1
+minus 
+select * from employeeSalary2
+```
+
+# query to find current date-time.
+```sql
+select sysdate from dual;
+```
+# query to fetch all the Employees from EmployeeDetails table who joined in Year 2016.
+```sql
+select * from EmployeeDetails where dateofJoining '1/1/1980' and '1/1/1982'
+```
+# fetch top n records.
+```sql
+//no sorted
+select * from emp where rownum<=8
+//sorted
+select * from (select * from employeeSalary order by salary desc) 
+where rownum<=3;
+```
+# Find the nth highest salary from table.
+```sql
+select * from (select emp.*, dense_rank(over salary desc) rn from emp) where rn<=9
+```
+
+# find the 3rd highest salary from table without using TOP/limit keyword
+```sql
+select * from emp e1 where 2 = (select count(distinct(salary)) 
+	from emp e2 where e2.salary>e1.salary);
+```
+> ## table1: EmployeeSalary(empid, project, salary)
+
+> ## table2: EmployeeDetails(empid, fullname, managerid, dateofJoining)
+
+
+
+# 2.1 The second highest salary among all Employees
 ```sql
 select max(sal)
 from emp
 where sal != (select max(sal) from emp);
 ```
-## 2.2 Select 5th maximum salary from a table
+# 2.2 Select 5th maximum salary from a table
 >Write a query to select Nth maximum salary from EMP table
 (or)
 Write a query to find 2nd, 3rd max salary from EMP table
@@ -191,4 +303,8 @@ select * from emp where lower(ename) like '%ing%'
 select sal, listagg(ename, ',') within group (order by hiredate) as emps
 from emp
 group by sal
+```
+###  1 the number of rows in a table without using COUNT function.
+```sql
+select max(rownum ) from emp;
 ```

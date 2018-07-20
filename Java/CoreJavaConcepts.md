@@ -11,13 +11,13 @@
 	- `interface Map<K,V>{}`
 ### methods in Collection
 ```java
-boolean add(E); boolean addAll(Collection<? extends E>);
+boolean add(E); boolean addAll(Collection< extends E>);
 
-boolean remove(E); boolean removeAll(Collection<? extends E>);
+boolean remove(E); boolean removeAll(Collection< extends E>);
 
-boolean contains(Object); boolean containsAll(Collection<?>);
+boolean contains(Object); boolean containsAll(Collection<>);
 
-boolean retainAll(Collection<? extends E>);
+boolean retainAll(Collection< extends E>);
 
 int size(); boolean isEmpty(); void clear();
 
