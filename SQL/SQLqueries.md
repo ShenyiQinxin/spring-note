@@ -47,7 +47,7 @@ select * from EmployeeDetails e where exists (select * from employeeSalary s whe
 
 # fetch duplicate records from a table.
 ```sql
-select * from employeeSalary where empid not in (select min(rowid) from employeeSalary)
+select * from EmployeeSalary where rowid not in (select min(rowid) from EmployeeSalary group by empid)
 ```
 
 # remove duplicates from a table without using temporary table

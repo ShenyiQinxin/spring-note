@@ -1,26 +1,72 @@
 
+> ## table1: EmployeeSalary(empid, project, salary)
+
+> ## table2: EmployeeDetails(empid, fullname, managerid, dateofJoining)
+
 ### 1. Fetch the count of employees working in project 'P1'.
+```sql
+select count(*) from EmployeeSalary where project='P1'
+```
 
 ### 2. Fetch employee names having salary greater than or equal to 5000 and less than or equal 10000.
-
+```sql
+select ed.fullname from EmployeeSalary es join EmployeeDetails ed on es.empid=ed.empid 
+where es.salary between 5000 and 1000
+```
 ### 3. Fetch project-wise count of employees sorted by project's count in descending order.
-
+```sql
+select project, count(empid) emp_count_per_project from EmployeeSalary 
+group by project 
+sorted by emp_count_per_project desc;
+```
 ### 4. Fetch only the first name(string before space) from the FullName column of EmployeeDetails table.
-
+```sql
+select substr(fullname, 1, instr(fullname, ' ')-1) first_name from EmployeeDetails;
+```
 ### 5. fetch employee names and salary records. Return employee details even if the salary record is not present for the employee.
+```sql
+select ed.fullname, es.salary 
+from EmployeeSalary es join EmployeeDetails ed 
+on es.empid = ed.empid
+where 
+```
 
 ### 6. fetch all the Employees who are also managers from EmployeeDetails table.
+```sql
+```
+
 
 ### 7. Fetch all employee records from EmployeeDetails table who have a salary record in EmployeeSalary table.
+```sql
+```
+
 
 ### 8. fetch duplicate records from a table.
+```sql
+```
+
 
 ### 9. remove duplicates from a table without using temporary table.
+```sql
+```
+
 
 ### 10. fetch only odd rows from table.
+```sql
+```
+
 ### 11 create a new table with data and structure copied from another table.
+```sql
+```
+
 ### 12 create an empty table with same structure as some other table.
+```sql
+```
+
 ### 13 fetch common records between two tables.
+```sql
+```
+
 ### 14 fetch records that are present in one table but not in another table.
 ### 15 query to find current date-time.
 ### 16 query to fetch all the Employees from EmployeeDetails table who joined in Year 2016.
@@ -28,9 +74,7 @@
 ### 18 Find the nth highest salary from table.
 ### 19 find the 3rd highest salary from table without using TOP/limit keyword.
 
-> ## table1: EmployeeSalary(empid, project, salary)
 
-> ## table2: EmployeeDetails(empid, fullname, managerid, dateofJoining)
 ```sql
 --1
 select count(*) from EmployeeSalary where project='P1';
