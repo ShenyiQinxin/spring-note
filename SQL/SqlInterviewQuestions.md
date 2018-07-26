@@ -111,7 +111,7 @@ where e1.empno=e2.empno)
 ### JOINs
 | inner join | left/right outer join|full outer join|cross join|natural join
 |--|--|--|--|--|
-| return rows that match the condition | rows from the left/right table don't match the condition and rows match the condition  ||cartesian product|join condition is based on columns from both tables with the same names and types|
+| return rows that match the condition | The LEFT JOIN returns all records from the left table, and only the matched records from the right table. It preserves the unmatched rows from the left table, joining them with NULL rows in the shape of the right table. ||cartesian product|join condition is based on columns from both tables with the same names and types|
 |**USING** for same name but different types|||when join condition is missing, it performs cartesion join|
 |**ON** *(t1.c=t2.c)* or *(t1.c BETWEEN t2.low AND t2.high)*|||each row in emp joins with each row in dept| 
 ```sql
@@ -119,7 +119,10 @@ where e1.empno=e2.empno)
 select * from dept;
 //
 select * from emp;
-//left outer join
+-- left outer join
+/*
+
+*/
 //DEPTNO DNAME	LOC	EMPNO ENAME	JOB	MGR	HIREDATE SAL COMM DEPTNO
 //40	OPERATIONS	BOSTON	-	-	-	-	-	-	-	-
 select * from dept d left outer join emp e on e.deptno=d.deptno;
