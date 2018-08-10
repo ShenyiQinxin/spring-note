@@ -108,6 +108,18 @@ test driven development: requirements --in a form of --> tests
 - use **stubs/mocks** as alternatives of non-tested dependencies.
 - test a unit bussiness logic, success or fail
 
+### JUnitTest
+- create a Junit test case 
+- @Test, @RepeatedTest, @DisplayName, @Disable
+- @BeforeEach, @BeforeAll 
+- AssertNull, AssertTrue, AssertFalse, AssertEquals, AssertArrayEquals, AsserThrows(NullPointerException,class, ..)
+- @ParameterizedTest(name="{0} and {1}"), 
+@ValueSource(strings={"str1","str2"..})
+@CsvSource(value={"param1,param2","param1, param2"})
+- assertTimeout(Duration.ofSeconds(5), () -> for(;;) sysout;
+				);
+- @Nested class className{...}
+
 ### Use a stub
 ```java
 public class AuthenticatorImpl{
