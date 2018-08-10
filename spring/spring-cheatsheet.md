@@ -613,6 +613,43 @@ public class RemoteAccountManager implements AccountService{
 	}
 }
 ```
+
+## Spring cloud config server
+config server is managed by a git repo
+```
+@EnableConfigServer
+@SpringBootApplication
+```
+## all requests pass through API gateways server using Zuul
+```
+@EnableZuulProxy
+@EnableDiscoveryClient
+```
+- authentication, authorization, security
+- rate limits
+- fault tolerance
+- service aggregation
+## dirtributed tracing server using Spring cloud Sleuth, Zipkin
+- Sleuth give each request an ID
+> however, the IDs are distributed in different services
+> hence it is in need of a dashboard to trace requests
+- Zipkin centralize requests ids, it has a UI dashboard to trace requests
+>RabbitMQ put all the request id log in Zipkin dstributed tracing server, and the log is stored in a DB
+
+## spring cloud bus
+the config change in cloud config server is updated from to all other servers
+just add dependency then sent 
+POST http://localhost:8080/actuator/bus-refresh
+
+## false tolerance
+```java
+@EnableHystrix
+@SpringBootApplication
+
+@HystrixCommand(fallbackMethod="methodName")
+public LimitConfiguration retrieveConfiguration() {}
+```
+
 # JDBC
 ## JDBC steps
 ```java
