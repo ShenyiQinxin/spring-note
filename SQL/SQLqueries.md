@@ -1,43 +1,44 @@
-# Fetch the count of employees working in project 'P1'.
+> ## table1: EmployeeSalary(empid, project, salary)
+
+> ## table2: EmployeeDetails(empid, fullname, managerid, dateofJoining)
+
+#1 Fetch the count of employees working in project 'P1'.
 ```sql
 select count(*) from employeeSalary where project = 'P1';
 ```
 
-# Fetch employee names having salary greater than or equal to 5000 and less than or equal 10000.
+#2 Fetch employee names having salary greater than or equal to 5000 and less than or equal 10000.
 ```sql
-
-select fullname from EmployeeDetails where empid in 
-(select empid from employeeSalary where salary between 5000 and 10000);
 
 select fullname from EmployeeDetails ed inner join EmployeeSalary es using empid
 where employeeSalary between 5000 and 10000;
 ```
 
-# Fetch project-wise count of employees sorted by project's count in descending order
+#3 Fetch project-wise count of employees sorted by project's count in descending order
 ```sql
 select project, count(empid) project_count from employeeSalary
 group by project
-order by project_count;
+order by project_count desc;
 ```
 
-# Fetch only the first name(string before space) from the FullName column of EmployeeDetails table.
+#4 Fetch only the first name(string before space) from the FullName column of EmployeeDetails table.
 ```sql
 select substr(fullname, 1, instr(fullname,' ')) from EmployeeDetails
 ```
 
-# fetch employee names and salary records. Return employee details even if the salary record is not present for the employee.
+#5 fetch employee names and salary records. Return employee details even if the salary record is not present for the employee.
 ```sql
 select es.salary, ed.fullname
-from employeeSalary es left out join EmployeeDetails ed
+from employeeSalary es Right outer join EmployeeDetails ed
 using empid
 ```
-# fetch all the Employees who are also managers from EmployeeDetails table
+#6 fetch all the Employees who are also managers from EmployeeDetails table
 ```sql
 select e.empid
 from EmployeeDetails e inner join EmployeeDetails m on e.managerid= m.empid
 ```
 
-# Fetch all employee records from EmployeeDetails table who have a salary record in EmployeeSalary table.
+#7 Fetch all employee records from EmployeeDetails table who have a salary record in EmployeeSalary table.
 ```sql
 select * from EmployeeDetails where empid in (select empid from employeeSalary where employeeSalary!=null)
 
@@ -45,40 +46,30 @@ select * from EmployeeDetails e where exists (select * from employeeSalary s whe
 
 ```
 
-# fetch duplicate records from a table.
+#8 fetch duplicate records from a table.
 ```sql
 select * from EmployeeSalary where rowid not in (select min(rowid) from EmployeeSalary group by empid)
 ```
 
-# remove duplicates from a table without using temporary table
+#9 remove duplicates from a table without using temporary table
 ```sql
 delete from employeeSalary where empid in (select empid from employeeSalary
 group by empid having count(empid)>1); 
 ```
 
-# fetch only odd rows from table.
+#10 fetch only odd rows from table.
 ```sql
 select * from (select employeeSalary.*,rowmun rn from employeeSalary)
 where mod(rn,2)==1
 ```
-# create a new table with data and structure copied from another table
-```sql
-create table new_table as 
-	select * from employeeSalary;
-```
 
-# create an empty table with same structure as some other table.
-```sql
-create table new_table as select * from employeeSalary where 1=2;
-```
-
-# fetch common records between two tables.
+#11 fetch common records between two tables.
 ```sql
 select * from employeeSalary1
 intersect
 select * from employeeSalary2
 ```
-# fetch records that are present in one table but not in another table.
+#12 fetch records that are present in one table but not in another table.
 ```sql
 select * from employeeSalary1
 minus 
@@ -110,6 +101,15 @@ select * from (select emp.*, dense_rank(over salary desc) rn from emp) where rn<
 ```sql
 select * from emp e1 where 2 = (select count(distinct(salary)) 
 	from emp e2 where e2.salary>e1.salary);
+```
+#11 create a new table with data and structure copied from another table
+```sql
+create table new_table as 
+	select * from employeeSalary;
+```
+#12 create an empty table with same structure as some other table.
+```sql
+create table new_table as select * from employeeSalary where 1=2;
 ```
 > ## table1: EmployeeSalary(empid, project, salary)
 
