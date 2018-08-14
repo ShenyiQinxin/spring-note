@@ -1,278 +1,95 @@
-
 Part - I SQL Interview Questions
 
-#5. Display employee number and total salary for each employee.
-#6. Display employee name and annual salary for all employees.
-#7. Display the names of all employees who are working in department number 10.
-#8. Display the names of all employees working as clerks and drawing a salary more than 3000.
-#9. Display employee number and names for employees who earn commission.
-#10. Display names of employees who do not earn any commission.
-#11. Display the names of employees who are working as clerk, salesman or analyst and drawing a
-#12. Display the names of employees who are working in the company for the past 5 years.
-#13. Display the list of employees who have joined the company before 30th June 90 or after 31st dec 90.
-#14. Display current date. 
-15. Display the list of users in your database (using log table). 
-16. Display the names of all tables from the current user. 
-17. Display the name of the current user. show user;
-18. Display the names of employees working in department number 10 or 20 or 40 or employees
-working as clerks, salesman or analyst.
-19. Display the names of employees whose name starts with alphabet S.
-20. Display employee names for employees whose name ends with alphabet.
+# Display employee number and names for employees who earn commission.
+```sql
+select empno, ename from emp where comm is not null and comm>0
+```
 
-21. Display the names of employees whose names have second alphabet A in their names.
+# Display the names of employees who are working in the company for the past 5 years.
+```sql
+select ename from emp where systemdate-hiredate> 5*365
+```
 
-22. Display the names of employees whose name is exactly five characters in length.
+# Display the names of employees who are not working as managers.
+```sql
+select ename from emp where empno not in (select mgr from emp where mgr is not null)
+```
 
+# Display dept numbers and total number of employees within each group.
+```sql
+select deptno, count(*) from emp group by deptno
+```
 
-23. Display the names of employees who are not working as managers.
+# Display the names of the employees who earn highest salary in their respective departments.
+```sql
+select ename from emp e where sal = (select max(sal) from emp where deptno=e.deptno)
+```
 
-24. Display the names of employees who are not working as SALESMAN or CLERK or ANALYST.
-25. Display all rows from EMP table. The system should wait after every screen full of information.
-set pause on;
-26. Display the total number of employees working in the company. 
-27. Display the total salary being paid to all employees.
+# Display the names of employees who earn highest salaries in their respective job groups.
+```sql
+select * from emp e where sal = (select max(sal) from emp where e.job=job)
+```
 
-28. Display the maximum salary from emp table. 
-29. Display the minimum salary from emp table. 
-30. Display the average salary from emp table. 
-31. Display the maximum salary being paid to CLERK.
+# Display the names of employees from department number 10 with salary greater than that of any employee working in other departments.
+```sql
+select ename,sal,deptno from emp e where deptno=10 and sal > any(select sal from emp where e.deptno!=deptno);
+```
 
-32. Display the maximum salary being paid in dept no 20.
-
-33. Display the min Sal being paid to any SALESMAN.
-
-34. Display the average salary drawn by managers.
-
-35. Display the total salary drawn by analyst working in dept no 40.
-
-36. Display the names of employees in order of salary i.e. the name of the employee earning lowest
-
-37. Display the names of employees in descending order of salary.
-
-38. Display the details from emp table in order of emp name.
-
-39. Display empno, ename, deptno, and sal. Sort the output first based on name and within name by
-deptno and within deptno by Sal;
-
-40. Display the name of the employee along with their annual salary (Sal * 12). The name of the
-employee earning highest annual salary should appear first.
-
-41. Display name, Sal, hra, pf, da, total Sal for each employee. The output should be in the order of
-total Sal, hra 15% of Sal, da 10% of sal, pf 5% of sal total salary will be (sal*hra*da)-pf.
-
-42. Display dept numbers and total number of employees within each group.
-
-43. Display the various jobs and total number of employees with each job group.
-3 of 13
-select job, count(*) from emp group by job;
-44. Display department numbers and total salary for each department.
-select deptno, sum(sal) from emp group by deptno;
-45. Display department numbers and maximum salary for each department.
-select deptno, max(sal),min(sal) from emp group by deptno;
-46. Display the various jobs and total salary for each job.
-select job, sum(sal) from emp group by job;
-47. Display each job along with minimum sal being paid in each job group.
-select job, min(sal) from emp group by job;
-48. Display the department numbers with more than three employees in each dept.
-select deptno, count(*) from emp group by deptno having count(*)>3;
-49. Display the various jobs along with total sal for each of the jobs where total sal is greater than
-40000.
-select job, sum(sal) from emp group by job having sum(sal)>40000;
-50. Display the various jobs along with total number of employees in each job. The output should
-contain only those jobs with more than three employees.
-select job, count(*) from emp group by job having count(*)>3;
-51. Display the name of emp who earns highest sal.
-select ename from emp where sal=(select max(sal) from emp);
-52. Display the employee number and name of employee working as CLERK and earning highest salary
-among CLERKS.
-select empno, ename from emp where job='CLERK' and sal=(select max(sal) from emp where
-job='CLERK');
-53. Display the names of the salesman who earns a salary more than the highest salary of any clerk.
-select ename from emp where job=?SALESMAN? and sal >
-(select max(sal) from emp where job='CLERK');
-54. Display the names of clerks who earn salary more than that of James of that of sal lesser than that
-of Scott.
-select ename from emp where job='CLERK' and sal<(select sal from emp where ename='SCOTT')
-and sal>(select sal from emp where ename='JAMES');
-55. Display the names of employees who earn a Sal more than that of James or that of salary greater
-than that of Scott.
-select ename from emp where sal <
-(select sal from emp where ename='SCOTT') and sal >
-(select sal from emp where ename='JAMES');
-Part – II SQL Interview Questions
-1. Display the names of the employees who earn highest salary in their respective departments.
-select * from emp e where sal = (select max(sal) from emp where deptno=e.deptno)
-2. Display the names of employees who earn highest salaries in their respective job groups.
-select * from emp e where sal in (select max(sal) from emp group by job having e.job=job)
-3. Display the employee names who are working in accountings dept.
-select ename from emp where deptno = (select deptno from dept where dname=?ACCOUNTING?);
-(or)
-select ename from emp where deptno in (select deptno from dept where dname=?ACCOUNTING?);
-4. Display the employee names who are working in Chicago.
-select ename from emp where deptno = (select deptno from dept where loc=?CHICAGO?);
-5. Display the job groups having total salary greater then the maximum salary for managers.
-select job, sum(sal) from emp group by job having sum(sal) >
-(select max(sal) from emp where job='MANAGER');
-4 of 13
-6. Display the names of employees from department number 10 with salary greater than that of any
-employee working in other departments.
-select ename,sal,deptno from emp e where deptno=10 and sal > any(select sal from emp where
-e.deptno!=deptno);
-7. Display the names of employee from department number 10 with salary greater then that of all
-employee working in other departments.
-select ename, sal, deptno from emp e where deptno=10 and sal > any(select sal from emp where
-e.deptno != deptno);
-8. Display the names of employees in Upper case. select upper(ename) from emp;
-9. Display the names of employees in lower case. select lower(ename) from emp;
-10. Display the name of employees in proper case. select initcap(ename) from emp;
-11. Find out the length of your name using appropriate function. select length(?India?) from dual;
-12. Display the length of all employees? names. select sum(length(ename)) from emp;
-13. Display the name of the employee concatenate with EMP no.
-select ename||empno from emp; (or) select concat(ename,empno) from emp;
-14. Use appropriate function and extract 3 characters starting from 2 characters from the following
-string ?Oracle? i.e. the output should be ?rac?.
-select substr(?oracle?,2,3) from dual;
-15. Find the first occurrence of character a from the following string ?computer maintenance
-corporation?.
-select instr(?computer maintenance corporation?,?a?,1,1) from dual;
-16. Replace every occurrence of alphabet A with B in the string Allen?s (user translate function).
+# Use appropriate function and extract 3 characters starting from 2 characters from the following string ?Oracle? i.e. the output should be ?rac?.
+```sql
+-- rac
+select substr('oracle',2,3) from dual;
+--17   2nd 'a' , start from index 1
+select instr('computer maintenance corporation','a',1,2) from dual;
+-- 'bllens'
 select replace('Allens','A','b') from dual;
-17. Display the information from EMP table. Wherever job ?manager? is found it should be displayed as
-boss(replace function).
-select empno, ename, replace(job, 'MANAGER', 'Boss') JOB from emp;
+```
+
 18. Display empno, ename, deptno from EMP table. Instead of display department numbers display the
 related department name (use decode function).
-select e.empno, e.ename, d.dname from emp e,dept d where e.deptno = d.deptno;
-19. Display your age in days.
-select round(sysdate-to_date('15-aug-1947')) from dual;
-20. Display your age in months.
-select floor(months_between(sysdate,'15-aug-1947')) "age in months" from dual;
-21. Display current date as 15th august Friday nineteen forty seven.
-select to_char(sysdate,'ddth month day year') from dual;
-22. Display the following output for each row from EMP table as ?scott has joined the company on
-Wednesday 13th august nineteen ninety?.
-select ename||' has joined the company on '||to_char(hiredate,'day ddth month year') from emp;
-23. Find the date of nearest Saturday after current day.
-select next_day(sysdate, 'SATURDAY') from dual;
-24. Display current time.
-select to_char(sysdate,'hh:mi:ss') Time from dual;
-25. Display the date three months before the current date.
-select add_months(sysdate,-3) from dual;
-5 of 13
-26. Display the common jobs from department number 10 and 20.
-select job from emp where deptno=10 and job in(select job from emp where deptno=20);
-(or)
-select job from emp where deptno=10 intersect select job from emp where deptno=20;
+```
+select empno, ename, decode(deptno, 10, 'ACCOUNTING', 20, 'RESEARCH', 30, 'SALES', 'DEFAULT') department from emp
+```
+
 27. Display the jobs found in department number 10 and 20 eliminate duplicate jobs.
-select distinct(job) from emp where deptno=10 and job in(select job from emp where deptno=20);
-(or)
-select job from emp where deptno=10 intersect select job from emp where deptno=20;
-28. Display the jobs which are unique to dept no 10.
-select job from emp where deptno=10 minus select job from emp where deptno!=10;
-(or)
-select job from emp where deptno = 10 and job not in (select job from emp where deptno<>10);
-29. Display the details of those who do not have any person working under them.
-select empno from emp where empno not in (select mgr from emp where mgr is not null);
-30. Display the details of employees who are in sales dept and grade is 3.
-select * from emp where sal>=(select losal from salgrade where grade=3) and sal<=(select hisal
-from salgrade where grade=3) and deptno=(select deptno from dept where dname='SALES');
-31. Display those who are not managers and who are managers any one.
-select * from emp where empno in(select mgr from emp) union
-select * from emp where empno not in(select mgr from emp where mgr is not null);
-32. Display those employees whose name contains not less than 4 chars.
-Select * from emp where length(ename)>4;
-33. Display those departments whose name start with ?S? while location name end with ?O?.
-select * from dept where dname like 'S%' and loc like '%O';
-34. Display those employees whose manager name is JONES.
-select * from emp where mgr=(select empno from emp where ename='JONES');
-35. Display those employees whose salary is more than 3000 after giving 20% increment.
-select * from emp where sal*120/100 > 3000; (or)
-select * from emp where sal+sal*20/100 > 3000;
-36. Display all employees with there dept name.
-select ename, dname from emp e, dept d where e.deptno = d.deptno;
-37. Display ename who are working in sales dept.
-select empno, ename from emp where
-deptno=(select deptno from dept where dname='SALES');
-38. Display employee name, deptname, salary and comm. for those Sal in between 2000 to 5000 while
-location is Chicago.
-select empno,ename,deptno from emp where deptno=(select deptno from dept where
-loc='CHICAGO') and sal between 2000 and 5000;
-39. Display those employees whose salary greater than his manager salary.
-select * from emp e where sal>(select sal from emp where empno=e.mgr);
-40. Display those employees who are working in the same dept where his manager is working.
-select * from emp e where deptno = (select deptno from emp where empno=e.mgr);
-41. Display those employees who are not working under any manger.
-select * from emp where mgr is null or empno=mgr;
-42. Display grade and employees name for the dept no 10 or 30 but grade is not 4, while joined the
-company before 31-dec-82.
-select empno,ename,sal,deptno,hiredate,grade from emp e,salgrade s where e.sal>=s.losal and
-e.sal<=s.hisal and deptno in(10,30) and grade<>4 and hiredate<'01-dec-1981';
-6 of 13
-43. Update the salary of each employee by 10% increments that are not eligible for commission.
-update emp set sal=sal+(sal*10/100) where comm is null;
-44. Delete those employees who joined the company before 31-dec-82 while there dept location is
-?NEW YORK? or ?CHICAGO?.
-delete from emp where hiredate<'31-dec-1982' and deptno in
-(select deptno from dept where loc in('NEW YORK','CHICAGO'));
-45. Display employee name, job, deptname, location for all who are working as managers.
-select ename,job,dname,loc from emp e, dept d where e.deptno=d.deptno and empno in (select mgr
-from emp);
-46. Display those employees whose manager names is Jones, and also display there manager name.
-select e.empno, e.ename, m.ename MANAGER from emp e, emp m
-where e.mgr=m.empno and m.ename='JONES';
-47. Display name and salary of ford if his Sal is equal to high Sal of his grade.
-select ename,sal from emp e where ename='FORD' and sal=(select hisal from salgrade where
-grade=(select grade from salgrade where e.sal>=losal and e.sal<=hisal));
-Part – III SQL Interview Questions
-1. Display employee name, his job, his dept name, his manager name, his grade and make out of an
-under department wise.
-break on deptno;
-select d.deptno, e.ename, e.job, d.dname, m.ename, s.grade from
-emp e, emp m, dept d, salgrade s where e.deptno=d.deptno and e.sal between s.losal and s.hisal
-and e.mgr=m.empno order by e.deptno;
-2. List out all the employees name, job, and salary grade and department name for every one in the
-company except ?CLERK?. Sort on salary display the highest salary.
-select empno, ename, sal, dname, grade from emp e, dept d, salgrade s where e.deptno=d.deptno
-and e.sal between s.losal and s.hisal and e.job<>'CLERK' order by sal;
-3. Display employee name, his job and his manager. Display also employees who are without
-manager.
-select e.ename, e.job, m.ename Manager from emp e,emp m where e.mgr=m.empno union select
-ename,job,'no manager' from emp where mgr is null;
+```sql
+select job from emp where deptno=10 
+intersect 
+select job from emp where deptno=20;
+```
+
+3. Display employee name, his job and his manager. Display also employees who are without manager.
+```sql
+select e.ename, e.job, m.ename from emp e left outer join emp m
+on e.mgr = m.empno;
+```
+
 4. Find out the top 5 earner of company.
-select * from emp e where 5>(select count(*) from emp where sal>e.sal) order by sal desc;
-5. Display the name of those employees who are getting highest salary.
-select empno,ename,sal from emp where sal=(select max(sal) from emp);
-6. Display those employees whose salary is equal to average of maximum and minimum.
-select * from emp where sal=(select (max(sal)+min(sal))/2 from emp);
-7. Display count of employees in each department where count greater than 3.
-select deptno, count(*) from emp group by deptno having count(*)>3;
-8. Display dname where at least 3 are working and display only dname.
-select dname from dept where deptno in
-(select deptno from emp group by deptno having count(*)>3);
-9. Display name of those managers name whose salary is more than average salary of company.
-select ename, sal from emp where empno in(select mgr from emp) and sal > (select avg(sal) from
-emp);
+```sql
+select * from (select emp.*, dense_rank() over (order by sal desc)
+rn from emp) where rn<=5;
+```
+
 10. Display those managers name whose salary is more than an average salary of his employees.
-select ename, sal from emp e where empno in(select mgr from emp) and e.sal>(select avg(sal)
-from emp where mgr=e.empno);
-11. Display employee name, Sal, comm and net pay for those employees whose net pay are greater
-7 of 13
-than or equal to any other employee salary of the company?
-select ename, sal, comm, sal+nvl(comm,0) netPay from emp where sal+nvl(comm.,0)>=any(select
-sal from emp);
-12. Display those employees whose salary is less than his manager but more than salary of any other
-managers.
-select * from emp e where sal<(select sal from emp where empno = e.mgr) and sal>any(select sal
-from emp where empno!=e.mgr);
-13. Display all employees names with total Sal of company with employee name.
-Select ename,
-14. Find out the last 5(least) earner of the company?
-select * from emp e where 5>(select count(*) from emp where sal<e.sal) order by sal;
-15. Find out the number of employees whose salary is greater than there manager salary?
-select count(*) from emp e where sal>(select sal from emp where empno=e.mgr);
-16. Display those manager who are not working under president but they are working under any other
-manager?
+```sql
+select ename, sal from emp m where empno in (select mgr from emp) 
+and m.sal>(select avg(sal) from emp where mgr=m.empno);
+```
+
+11. Display employee name, Sal, comm and net pay for those employees whose net pay are greater than or equal to any other employee salary of the company?
+```sql
+select ename, sal, comm, sal+nvl(comm,0) netPay from emp where sal+nvl(comm.,0)>=any(select sal from emp);
+```
+12. Display those employees whose salary is less than his manager but more than salary of any other employees.
+```sql
+select * from emp e where sal<(select sal from emp where empno = e.mgr) and sal>any(select sal from emp where empno!=e.mgr);
+```
+
+16. Display those employee who are not working under president but they are working under any other manager?
+```sql
 select * from emp e where mgr in(select empno from emp where ename<>'KING');
+```
+
 17. Delete those department where no employee working?
 delete from dept d where 0=(select count(*) from emp where deptno=d.deptno);
 18. Delete those records from EMP table whose deptno not available in dept table?
