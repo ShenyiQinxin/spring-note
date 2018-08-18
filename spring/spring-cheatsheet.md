@@ -5,6 +5,7 @@
 - opinionated runtime: 
 - Dependency Management
 - auto-configuration but customizable
+`https://docs.spring.io/spring-boot/docs/current/reference/html/common-application-properties.html`
 - packaging
 
 ## How to setup a SpringBoot project?
